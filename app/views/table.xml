@@ -1,0 +1,48 @@
+<Alloy>
+	<Window navBarHidden="true">
+		<View class="header">
+    	  <View class="iconWrap">
+	       <ImageView id="backImage" onClick="closeWindow" />
+	      </View>
+	      <Label id="headerTitle">Partite Aperte</Label>
+	      
+	      <View class="rightActionBarButton2" onClick="showHidePopup">
+	        <ImageView id="payImage"/>
+	      </View>
+	    </View>
+	    
+		<TableView id="tblView">
+			
+        </TableView>
+        
+        <View class="footer" id="footer">
+        	<Label id="footerTitle">Totale selezionato: 0 EUR</Label>
+        </View>
+        
+        <!-- POPUP -->
+        <View class="overlay" id="overlay" visible="false"></View>
+        <View class="popup" id="popup" visible="false">
+        	<View class="popupHeader">
+        		<View height="52dp"  width="Ti.UI.FILL">
+	        		<Label id="popupTitle">Metodo di pagamento<Label>
+	        		<View class="rightActionBarButton2" onClick="showHidePopup">
+			        	<ImageView class="closeImageBlue"/>
+			      	</View>
+		      	</View>
+        		<View class="popupHeaderRow"></View>
+        	</View>
+        	<View class="popupContent">
+        		<Button class="popupButton" title="Contanti" onClick="pay"></Button>
+        		<View class="separator"></View>
+        		<Button class="popupButton" title="Assegno" onClick="pay"></Button>
+        		<View class="separator"></View>
+        		<Button class="popupButton" title="Bonifico" onClick="pay"></Button>
+        		<View class="separator"></View>
+        		<Button class="popupButton" title="Carta/Bancomat"></Button>
+        	</View>
+        </View>
+        <!-- /POPUP -->
+        
+        <ActivityIndicator id="activityIndicator" top="Alloy.Globals.top" />
+	</Window>
+</Alloy>

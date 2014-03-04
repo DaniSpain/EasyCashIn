@@ -1,0 +1,29 @@
+<Alloy>
+	<Window navBarHidden="true">
+		<View class="header">
+    	  <View class="iconWrap">
+	       <ImageView class="dynaIcon"/>
+	      </View>
+	      <Label id="headerTitle">Clienti</Label>
+	      
+	      <View class="rightActionBarButton1" onClick="refreshData">
+	        <ImageView id="refreshImage"/>
+	      </View>
+	      
+	      <View class="rightActionBarButton2" onClick="showHideSearchBar">
+	        <ImageView id="searchImage"/>
+	      </View>
+	      
+	    </View>
+	    
+		<TableView id="tblView">
+			
+        </TableView>
+        
+        <View id="searchWrap" visible="false"  layout="vertical">
+        	<SearchBar id="search" barColor="#0099CC" showCancel="false" height="43" onReturn="searchData" onChange="searchDataNoHide" />
+        </View>
+        
+        <ActivityIndicator id="activityIndicator" top="Alloy.Globals.top" />
+	</Window>
+</Alloy>	

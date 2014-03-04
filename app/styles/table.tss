@@ -1,0 +1,30 @@
+"TableView": {
+	top: Alloy.Globals.tableTop,
+	separatorColor: '#0099CC'
+}
+
+"#payImage" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	color: "#fff",
+	backgroundColor: "transparent",
+	image: "/images/incassa.png",
+}
+
+".popupButton" : {
+	height: 48,
+	width: Ti.UI.FILL,
+	top: 5,
+	left: 5,
+	right: 5,
+	color: '#0099CC',
+	backgroundColor: "#ffffff",
+}
+
+".separator" : {
+	height: 1,
+	width: Ti.UI.FILL,
+	left: 10,
+	right: 10,
+	backgroundColor: '#0099CC'
+}

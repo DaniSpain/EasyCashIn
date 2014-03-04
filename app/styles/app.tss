@@ -1,0 +1,180 @@
+"Window" : {
+	backgroundColor: "#ffffff"	
+}
+
+".header" : {
+	top: Alloy.Globals.top,
+	height: "50dp",
+	width: Ti.UI.FILL,
+	backgroundColor: "#669900",
+}
+
+"#headerTitle" : {
+	left: "60dp",
+	color: "#fff",
+	font: {
+		fontSize: '20sp',
+	  	fontWeight: 'bold'
+	}
+}
+
+"#footerTitle" : {
+	right: "60dp",
+	color: "#fff",
+	font: {
+		fontSize: '15sp',
+	  	fontWeight: 'bold'
+	}
+}
+
+".footer" : {
+	bottom: 0,
+	height: 48,
+	width: Ti.UI.FILL,
+	backgroundColor: '#0099cc',
+	
+}
+
+
+".iconWrap" : { 
+	left: 10,
+	width: 40,
+	height: 40
+}
+
+".rightActionBarButton2" : {
+	right: 10,
+	width: 40,
+	height: 40
+}
+
+".rightActionBarButton1" : {
+	right: 60,
+	width: 40,
+	height: 40
+}
+
+"#searchWrap" : {
+	width: Ti.UI.FILL, 
+	height: Ti.UI.SIZE,
+	top: Alloy.Globals.tableTop 
+}
+
+"#backImage" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	color: "#fff",
+	backgroundColor: "transparent",
+	image: "/images/ic_action_back.png",
+	//touchEnabled: false
+}
+
+"#searchImage" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	backgroundColor: "transparent",
+	image: "/images/ic_action_search.png",
+}
+
+"#refreshImage" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	backgroundColor: "transparent",
+	image: "/images/ic_action_refresh.png",
+}
+
+".dynaIcon" : {  
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	color: "#fff",
+	backgroundColor: "transparent",
+	image: "/images/icon.png",
+	touchEnabled: false
+}
+
+"#closeView" : {
+	top: 0,
+	bottom: 0,
+	right: 0,
+	width: "50dp"
+}
+
+"#closeImage" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	color: "#fff",
+	backgroundColor: "transparent",
+	image: "/images/ic_action_undo.png",
+	//touchEnabled: false
+}
+
+".controlWrapper" : {
+	left: "10dp",
+	height: "100dp",
+	width: "280dp",
+	top: "10dp"
+}
+
+"#activityIndicator" : {
+	color: '#ffffff',
+  	font: {fontFamily:'Helvetica Neue', fontSize:16, fontWeight:'bold'},
+  	style: Alloy.Globals.style,
+  	top: 0,
+  	horizontalWrap: true,
+  	backgroundColor: '#0099CC',
+  	height:Ti.UI.FILL,
+  	width:Ti.UI.FILL,
+}
+
+".overlay" : {
+	top: Alloy.Globals.top,
+	width: Ti.UI.FILL,
+	height: Ti.UI.FILL,
+	opacity: 0.6,
+	backgroundColor: '#000000',
+}
+
+".popup" : {
+	width: "80%",
+	height: Ti.UI.SIZE,
+	backgroundColor: "#ffffff",
+	opacity: 1.0
+}
+
+".popupHeader" : {
+	width: Ti.UI.FILL,
+	top: 0,
+	height: 55,
+	layout: "vertical" 
+}
+ 
+".popupHeaderRow" : {
+	width: Ti.UI.FILL,
+	height: 2,
+	backgroundColor: "#0099CC"	
+}
+
+"#popupTitle" : {
+	left: 10,
+	color: "#0099CC",
+	font: {
+		fontSize: '15sp',
+	  	fontWeight: 'bold'
+	}
+}
+
+".closeImageBlue" : {
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	backgroundColor: "transparent",
+	image: "/images/close_blue.png",
+	//touchEnabled: false
+}
+
+".popupContent" : {
+	top: 55,
+	height: Ti.UI.SIZE,
+	width: Ti.UI.FILL,
+	backgroundColor: "transparent",
+	layout: "vertical"
+}

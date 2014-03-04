@@ -1,0 +1,29 @@
+
+"Label": {
+	width: Ti.UI.SIZE,
+	height: Ti.UI.SIZE,
+	color: "#000"
+} 
+
+
+
+"Button": {
+	color: '#0099CC',
+	backgroundColor: '#ffffff',
+	backgroundSelectedColor: '#c6eaf7',
+	font: {fontFamily:'Helvetica Neue', fontSize:18},
+	top: 10,
+	left: 10,
+	borderRadius: Alloy.Globals.buttonRadius,
+	width: Alloy.Globals.buttonSize,
+	height: Alloy.Globals.buttonSize
+}
+
+"#content": {
+	top: Alloy.Globals.tableTop,
+	height: Ti.UI.FILL,
+	width: Ti.UI.FILL,
+	backgroundColor: '#33B5E5'
+}
+
+
