@@ -1,6 +1,7 @@
 "TableView": {
 	top: Alloy.Globals.tableTop,
-	separatorColor: '#0099CC'
+	separatorColor: '#0099CC',
+	bottom: 48
 }
 
 "#payImage" : {

@@ -18,7 +18,7 @@ function Controller() {
                 selectedBackgroundColor: "#ffffff",
                 rowId: rowset.fieldByName("Id"),
                 payed: rowset.fieldByName("Pagato__c"),
-                height: 100,
+                height: rowHeight,
                 backgroundColor: "#ffffff"
             });
             var view = Titanium.UI.createView({
@@ -28,10 +28,28 @@ function Controller() {
                 layout: "horizontal",
                 horizontalWrap: true
             });
-            var lblImporto = Ti.UI.createLabel({
+            var vImporto = Ti.UI.createView({
                 left: 10,
                 top: 10,
-                width: 150,
+                height: Ti.UI.SIZE,
+                width: Ti.UI.SIZE,
+                layout: "vertical"
+            });
+            var lblLblImporto = Ti.UI.createLabel({
+                left: 0,
+                top: 0,
+                width: ctrlWidth,
+                height: Ti.UI.SIZE,
+                font: {
+                    fontSize: 12
+                },
+                color: "#000000",
+                text: "Importo"
+            });
+            var lblImporto = Ti.UI.createLabel({
+                left: 0,
+                top: 5,
+                width: ctrlWidth,
                 height: Ti.UI.SIZE,
                 font: {
                     fontSize: 20
@@ -39,12 +57,14 @@ function Controller() {
                 color: "#000000",
                 text: rowset.fieldByName("Importo__c") + " EUR"
             });
+            vImporto.add(lblLblImporto);
+            vImporto.add(lblImporto);
             Ti.API.info("[EasyCashIn] Importo: " + rowset.fieldByName("Importo__c"));
             Ti.API.info("[EasyCashIn] Pagato: " + rowset.fieldByName("Pagato__c"));
             var lblPayed = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 150,
+                width: ctrlWidth,
                 height: Ti.UI.SIZE,
                 font: {
                     fontSize: 20
@@ -52,10 +72,28 @@ function Controller() {
                 text: getLabelText(rowset.fieldByName("Pagato__c")),
                 color: getLabelColor(rowset.fieldByName("Pagato__c"))
             });
-            var lblScadenza = Ti.UI.createLabel({
+            var vScadenza = Ti.UI.createView({
                 left: 10,
                 top: 10,
-                width: 150,
+                height: Ti.UI.SIZE,
+                width: Ti.UI.SIZE,
+                layout: "vertical"
+            });
+            var lblLblScadenza = Ti.UI.createLabel({
+                left: 0,
+                top: 0,
+                width: ctrlWidth,
+                height: Ti.UI.SIZE,
+                font: {
+                    fontSize: 12
+                },
+                color: "#000000",
+                text: "Data Scadenza"
+            });
+            var lblScadenza = Ti.UI.createLabel({
+                left: 0,
+                top: 5,
+                width: ctrlWidth,
                 height: Ti.UI.SIZE,
                 font: {
                     fontSize: 20
@@ -63,9 +101,11 @@ function Controller() {
                 color: "#000000",
                 text: rowset.fieldByName("Data_Scadenza__c")
             });
+            vScadenza.add(lblLblScadenza);
+            vScadenza.add(lblScadenza);
             var payView = Ti.UI.createView({
                 height: Ti.UI.SIZE,
-                width: 150,
+                width: ctrlWidth,
                 left: 10,
                 top: 10,
                 layout: "horizontal",
@@ -101,12 +141,61 @@ function Controller() {
                 }
                 $.footerTitle.setText("Totale selezionato: " + amount_to_pay + " EUR");
             });
+            if (IS_TABLET) {
+                var vDoc = Ti.UI.createView({
+                    left: 10,
+                    top: 10,
+                    height: Ti.UI.SIZE,
+                    width: Ti.UI.SIZE,
+                    layout: "vertical"
+                });
+                var lblLblDoc = Ti.UI.createLabel({
+                    left: 0,
+                    top: 0,
+                    width: ctrlWidth,
+                    height: Ti.UI.SIZE,
+                    font: {
+                        fontSize: 12
+                    },
+                    color: "#000000",
+                    text: "# Documento"
+                });
+                var lblDoc = Ti.UI.createLabel({
+                    left: 0,
+                    top: 5,
+                    width: ctrlWidth,
+                    height: Ti.UI.SIZE,
+                    font: {
+                        fontSize: 20
+                    },
+                    color: "#000000",
+                    text: rowset.fieldByName("Name")
+                });
+                vDoc.add(lblLblDoc);
+                vDoc.add(lblDoc);
+                view.add(vDoc);
+            }
             payView.add(lblPay);
             payView.add(paySwitch);
-            view.add(lblImporto);
+            view.add(vImporto);
             view.add(lblPayed);
-            view.add(lblScadenza);
+            view.add(vScadenza);
             "false" == rowset.fieldByName("Pagato__c") && view.add(payView);
+            var needSync = Alloy.Globals.dynaforce.needSync({
+                Id: rowset.fieldByName("Id")
+            });
+            if (needSync) {
+                var btnSync = Titanium.UI.createView({
+                    top: 10,
+                    left: 10,
+                    width: 40,
+                    height: 40,
+                    backgroundImage: "/images/not_sync.png",
+                    touchEnabled: true,
+                    rowId: rowset.fieldByName("Id")
+                });
+                view.add(btnSync);
+            }
             row.add(view);
             tableData.push(row);
             rowset.next();
@@ -116,7 +205,7 @@ function Controller() {
         db.close();
     }
     function showHidePopup() {
-        if (popup_visible) {
+        if (0 != amount_to_pay) if (popup_visible) {
             $.popup.hide();
             $.overlay.hide();
             popup_visible = false;
@@ -124,7 +213,7 @@ function Controller() {
             $.popup.show();
             $.overlay.show();
             popup_visible = true;
-        }
+        } else alert("Non hai selezionato nessuna fattura per eseguire il pagamento");
     }
     function pay() {
         $.activityIndicator.setMessage("Perform payment");
@@ -140,15 +229,28 @@ function Controller() {
                 alert("Payment Error");
             }
         });
-        $.activityIndicator.setMessage("Sync Data to server");
-        Alloy.Globals.dynaforce.pushDataToServer({
-            success: function() {
-                Ti.API.info("[table] push data SUCCESS");
-                showHidePopup();
-                loadTableData();
-                $.activityIndicator.hide();
-            }
-        });
+        if (Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
+            $.activityIndicator.setMessage("Sync Data to server");
+            Alloy.Globals.dynaforce.pushDataToServer({
+                success: function() {
+                    Ti.API.info("[table] push data SUCCESS");
+                    showHidePopup();
+                    loadTableData();
+                    Alloy.Globals.dynaforce.setChanges();
+                    $.activityIndicator.hide();
+                }
+            });
+        } else {
+            showHidePopup();
+            loadTableData();
+            $.activityIndicator.hide();
+        }
+    }
+    function posPay() {
+        var mposView = Alloy.createController("mpos", {
+            amount: amount_to_pay
+        }).getView();
+        mposView.open();
     }
     function getLabelColor(payed) {
         var payedColor;
@@ -177,21 +279,21 @@ function Controller() {
         id: "table"
     });
     $.__views.table && $.addTopLevelView($.__views.table);
-    $.__views.__alloyId8 = Ti.UI.createView({
+    $.__views.__alloyId12 = Ti.UI.createView({
         top: Alloy.Globals.top,
         height: "50dp",
         width: Ti.UI.FILL,
         backgroundColor: "#669900",
-        id: "__alloyId8"
+        id: "__alloyId12"
     });
-    $.__views.table.add($.__views.__alloyId8);
-    $.__views.__alloyId9 = Ti.UI.createView({
+    $.__views.table.add($.__views.__alloyId12);
+    $.__views.__alloyId13 = Ti.UI.createView({
         left: 10,
         width: 40,
         height: 40,
-        id: "__alloyId9"
+        id: "__alloyId13"
     });
-    $.__views.__alloyId8.add($.__views.__alloyId9);
+    $.__views.__alloyId12.add($.__views.__alloyId13);
     $.__views.backImage = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
@@ -200,7 +302,7 @@ function Controller() {
         image: "/images/ic_action_back.png",
         id: "backImage"
     });
-    $.__views.__alloyId9.add($.__views.backImage);
+    $.__views.__alloyId13.add($.__views.backImage);
     closeWindow ? $.__views.backImage.addEventListener("click", closeWindow) : __defers["$.__views.backImage!click!closeWindow"] = true;
     $.__views.headerTitle = Ti.UI.createLabel({
         left: "60dp",
@@ -212,15 +314,15 @@ function Controller() {
         text: "Partite Aperte",
         id: "headerTitle"
     });
-    $.__views.__alloyId8.add($.__views.headerTitle);
-    $.__views.__alloyId10 = Ti.UI.createView({
+    $.__views.__alloyId12.add($.__views.headerTitle);
+    $.__views.__alloyId14 = Ti.UI.createView({
         right: 10,
         width: 40,
         height: 40,
-        id: "__alloyId10"
+        id: "__alloyId14"
     });
-    $.__views.__alloyId8.add($.__views.__alloyId10);
-    showHidePopup ? $.__views.__alloyId10.addEventListener("click", showHidePopup) : __defers["$.__views.__alloyId10!click!showHidePopup"] = true;
+    $.__views.__alloyId12.add($.__views.__alloyId14);
+    showHidePopup ? $.__views.__alloyId14.addEventListener("click", showHidePopup) : __defers["$.__views.__alloyId14!click!showHidePopup"] = true;
     $.__views.payImage = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
@@ -229,10 +331,11 @@ function Controller() {
         image: "/images/incassa.png",
         id: "payImage"
     });
-    $.__views.__alloyId10.add($.__views.payImage);
+    $.__views.__alloyId14.add($.__views.payImage);
     $.__views.tblView = Ti.UI.createTableView({
         top: Alloy.Globals.tableTop,
         separatorColor: "#0099CC",
+        bottom: 48,
         id: "tblView"
     });
     $.__views.table.add($.__views.tblView);
@@ -266,7 +369,7 @@ function Controller() {
     });
     $.__views.table.add($.__views.overlay);
     $.__views.popup = Ti.UI.createView({
-        width: "80%",
+        width: 300,
         height: Ti.UI.SIZE,
         backgroundColor: "#ffffff",
         opacity: 1,
@@ -274,20 +377,20 @@ function Controller() {
         visible: "false"
     });
     $.__views.table.add($.__views.popup);
-    $.__views.__alloyId11 = Ti.UI.createView({
+    $.__views.__alloyId15 = Ti.UI.createView({
         width: Ti.UI.FILL,
         top: 0,
         height: 55,
         layout: "vertical",
-        id: "__alloyId11"
+        id: "__alloyId15"
     });
-    $.__views.popup.add($.__views.__alloyId11);
-    $.__views.__alloyId12 = Ti.UI.createView({
+    $.__views.popup.add($.__views.__alloyId15);
+    $.__views.__alloyId16 = Ti.UI.createView({
         height: "52dp",
         width: Ti.UI.FILL,
-        id: "__alloyId12"
+        id: "__alloyId16"
     });
-    $.__views.__alloyId11.add($.__views.__alloyId12);
+    $.__views.__alloyId15.add($.__views.__alloyId16);
     $.__views.popupTitle = Ti.UI.createLabel({
         left: 10,
         color: "#0099CC",
@@ -297,87 +400,43 @@ function Controller() {
         },
         id: "popupTitle"
     });
-    $.__views.__alloyId12.add($.__views.popupTitle);
-    $.__views.__alloyId13 = Ti.UI.createLabel({
-        id: "__alloyId13"
+    $.__views.__alloyId16.add($.__views.popupTitle);
+    $.__views.__alloyId17 = Ti.UI.createLabel({
+        id: "__alloyId17"
     });
-    $.__views.__alloyId12.add($.__views.__alloyId13);
-    $.__views.__alloyId14 = Ti.UI.createView({
+    $.__views.__alloyId16.add($.__views.__alloyId17);
+    $.__views.__alloyId18 = Ti.UI.createView({
         right: 10,
         width: 40,
         height: 40,
-        id: "__alloyId14"
+        id: "__alloyId18"
     });
-    $.__views.__alloyId12.add($.__views.__alloyId14);
-    showHidePopup ? $.__views.__alloyId14.addEventListener("click", showHidePopup) : __defers["$.__views.__alloyId14!click!showHidePopup"] = true;
-    $.__views.__alloyId15 = Ti.UI.createImageView({
+    $.__views.__alloyId16.add($.__views.__alloyId18);
+    showHidePopup ? $.__views.__alloyId18.addEventListener("click", showHidePopup) : __defers["$.__views.__alloyId18!click!showHidePopup"] = true;
+    $.__views.__alloyId19 = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
         backgroundColor: "transparent",
         image: "/images/close_blue.png",
-        id: "__alloyId15"
+        id: "__alloyId19"
     });
-    $.__views.__alloyId14.add($.__views.__alloyId15);
-    $.__views.__alloyId16 = Ti.UI.createView({
+    $.__views.__alloyId18.add($.__views.__alloyId19);
+    $.__views.__alloyId20 = Ti.UI.createView({
         width: Ti.UI.FILL,
         height: 2,
         backgroundColor: "#0099CC",
-        id: "__alloyId16"
+        id: "__alloyId20"
     });
-    $.__views.__alloyId11.add($.__views.__alloyId16);
-    $.__views.__alloyId17 = Ti.UI.createView({
+    $.__views.__alloyId15.add($.__views.__alloyId20);
+    $.__views.__alloyId21 = Ti.UI.createView({
         top: 55,
         height: Ti.UI.SIZE,
         width: Ti.UI.FILL,
         backgroundColor: "transparent",
         layout: "vertical",
-        id: "__alloyId17"
-    });
-    $.__views.popup.add($.__views.__alloyId17);
-    $.__views.__alloyId18 = Ti.UI.createButton({
-        height: 48,
-        width: Ti.UI.FILL,
-        top: 5,
-        left: 5,
-        right: 5,
-        color: "#0099CC",
-        backgroundColor: "#ffffff",
-        title: "Contanti",
-        id: "__alloyId18"
-    });
-    $.__views.__alloyId17.add($.__views.__alloyId18);
-    pay ? $.__views.__alloyId18.addEventListener("click", pay) : __defers["$.__views.__alloyId18!click!pay"] = true;
-    $.__views.__alloyId19 = Ti.UI.createView({
-        height: 1,
-        width: Ti.UI.FILL,
-        left: 10,
-        right: 10,
-        backgroundColor: "#0099CC",
-        id: "__alloyId19"
-    });
-    $.__views.__alloyId17.add($.__views.__alloyId19);
-    $.__views.__alloyId20 = Ti.UI.createButton({
-        height: 48,
-        width: Ti.UI.FILL,
-        top: 5,
-        left: 5,
-        right: 5,
-        color: "#0099CC",
-        backgroundColor: "#ffffff",
-        title: "Assegno",
-        id: "__alloyId20"
-    });
-    $.__views.__alloyId17.add($.__views.__alloyId20);
-    pay ? $.__views.__alloyId20.addEventListener("click", pay) : __defers["$.__views.__alloyId20!click!pay"] = true;
-    $.__views.__alloyId21 = Ti.UI.createView({
-        height: 1,
-        width: Ti.UI.FILL,
-        left: 10,
-        right: 10,
-        backgroundColor: "#0099CC",
         id: "__alloyId21"
     });
-    $.__views.__alloyId17.add($.__views.__alloyId21);
+    $.__views.popup.add($.__views.__alloyId21);
     $.__views.__alloyId22 = Ti.UI.createButton({
         height: 48,
         width: Ti.UI.FILL,
@@ -386,10 +445,10 @@ function Controller() {
         right: 5,
         color: "#0099CC",
         backgroundColor: "#ffffff",
-        title: "Bonifico",
+        title: "Contanti",
         id: "__alloyId22"
     });
-    $.__views.__alloyId17.add($.__views.__alloyId22);
+    $.__views.__alloyId21.add($.__views.__alloyId22);
     pay ? $.__views.__alloyId22.addEventListener("click", pay) : __defers["$.__views.__alloyId22!click!pay"] = true;
     $.__views.__alloyId23 = Ti.UI.createView({
         height: 1,
@@ -399,7 +458,7 @@ function Controller() {
         backgroundColor: "#0099CC",
         id: "__alloyId23"
     });
-    $.__views.__alloyId17.add($.__views.__alloyId23);
+    $.__views.__alloyId21.add($.__views.__alloyId23);
     $.__views.__alloyId24 = Ti.UI.createButton({
         height: 48,
         width: Ti.UI.FILL,
@@ -408,10 +467,42 @@ function Controller() {
         right: 5,
         color: "#0099CC",
         backgroundColor: "#ffffff",
-        title: "Carta/Bancomat",
+        title: "Assegno",
         id: "__alloyId24"
     });
-    $.__views.__alloyId17.add($.__views.__alloyId24);
+    $.__views.__alloyId21.add($.__views.__alloyId24);
+    pay ? $.__views.__alloyId24.addEventListener("click", pay) : __defers["$.__views.__alloyId24!click!pay"] = true;
+    $.__views.__alloyId25 = Ti.UI.createView({
+        height: 1,
+        width: Ti.UI.FILL,
+        left: 10,
+        right: 10,
+        backgroundColor: "#0099CC",
+        id: "__alloyId25"
+    });
+    $.__views.__alloyId21.add($.__views.__alloyId25);
+    $.__views.__alloyId26 = Ti.UI.createButton({
+        height: 48,
+        width: Ti.UI.FILL,
+        top: 5,
+        left: 5,
+        right: 5,
+        color: "#0099CC",
+        backgroundColor: "#ffffff",
+        title: "Bonifico",
+        id: "__alloyId26"
+    });
+    $.__views.__alloyId21.add($.__views.__alloyId26);
+    pay ? $.__views.__alloyId26.addEventListener("click", pay) : __defers["$.__views.__alloyId26!click!pay"] = true;
+    $.__views.__alloyId27 = Ti.UI.createView({
+        height: 1,
+        width: Ti.UI.FILL,
+        left: 10,
+        right: 10,
+        backgroundColor: "#0099CC",
+        id: "__alloyId27"
+    });
+    $.__views.__alloyId21.add($.__views.__alloyId27);
     $.__views.activityIndicator = Ti.UI.createActivityIndicator({
         color: "#ffffff",
         font: {
@@ -434,12 +525,23 @@ function Controller() {
     $.activityIndicator.hide();
     var sobject = "Partita_Aperta__c";
     var accountId = args["accountId"];
+    var osname = Ti.Platform.osname, height = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight), width = Ti.Platform.displayCaps.platformWidth;
     var IS_IOS;
     var IS_ANDROID;
-    IS_ANDROID = false;
-    IS_IOS = true;
+    if ("android" == osname) {
+        IS_ANDROID = true;
+        IS_IOS = false;
+    } else {
+        IS_ANDROID = false;
+        IS_IOS = true;
+    }
+    var IS_TABLET = "ipad" === osname || "android" === osname && (width > 899 || height > 899);
+    var rowHeight;
+    rowHeight = IS_TABLET ? 90 : 150;
+    var ctrlWidth = 140;
+    var amount_to_pay = 0;
     var selected_row_ids = [];
-    var selectList = "Id, Data_Documento__c, Data_Scadenza__c, Importo__c, Pagato__c, Scadenza__c, Scaduta__c";
+    var selectList = "Id, Name, Data_Documento__c, Data_Scadenza__c, Importo__c, Pagato__c, Scadenza__c, Scaduta__c";
     loadTableData();
     $.table.open();
     var popup_visible = false;
@@ -447,11 +549,12 @@ function Controller() {
         $.destroy();
     });
     __defers["$.__views.backImage!click!closeWindow"] && $.__views.backImage.addEventListener("click", closeWindow);
-    __defers["$.__views.__alloyId10!click!showHidePopup"] && $.__views.__alloyId10.addEventListener("click", showHidePopup);
     __defers["$.__views.__alloyId14!click!showHidePopup"] && $.__views.__alloyId14.addEventListener("click", showHidePopup);
-    __defers["$.__views.__alloyId18!click!pay"] && $.__views.__alloyId18.addEventListener("click", pay);
-    __defers["$.__views.__alloyId20!click!pay"] && $.__views.__alloyId20.addEventListener("click", pay);
+    __defers["$.__views.__alloyId18!click!showHidePopup"] && $.__views.__alloyId18.addEventListener("click", showHidePopup);
     __defers["$.__views.__alloyId22!click!pay"] && $.__views.__alloyId22.addEventListener("click", pay);
+    __defers["$.__views.__alloyId24!click!pay"] && $.__views.__alloyId24.addEventListener("click", pay);
+    __defers["$.__views.__alloyId26!click!pay"] && $.__views.__alloyId26.addEventListener("click", pay);
+    __defers["$.__views.__alloyId28!click!posPay"] && $.__views.__alloyId28.addEventListener("click", posPay);
     _.extend($, exports);
 }
 

@@ -16,7 +16,7 @@ function Controller() {
                 className: "listRow",
                 selectedBackgroundColor: "#ffffff",
                 rowId: rowset.fieldByName("Id"),
-                height: 200,
+                height: rowHeight,
                 backgroundColor: "#ffffff"
             });
             var view = Titanium.UI.createView({
@@ -94,10 +94,13 @@ function Controller() {
                 rowId: rowset.fieldByName("Id")
             });
             btnPartiteAperte.addEventListener("click", function(e) {
+                $.activityIndicator.setMessage("Loading Data");
+                $.activityIndicator.show();
                 var tableView = Alloy.createController("table", {
                     accountId: e.source.rowId
                 }).getView();
                 tableView.open();
+                $.activityIndicator.hide();
             });
             btnMail = Titanium.UI.createView({
                 top: 10,
@@ -124,7 +127,17 @@ function Controller() {
                 height: 64,
                 backgroundImage: "/images/activity.png",
                 color: "#ffffff",
+                rowId: rowset.fieldByName("Id"),
                 touchEnabled: true
+            });
+            btnActivity.addEventListener("click", function(e) {
+                $.activityIndicator.setMessage("Loading History");
+                $.activityIndicator.show();
+                var historyView = Alloy.createController("history", {
+                    accountId: e.source.rowId
+                }).getView();
+                historyView.open();
+                $.activityIndicator.hide();
             });
             rightview.add(btnPartiteAperte);
             rightview.add(btnMail);
@@ -204,31 +217,31 @@ function Controller() {
         id: "list"
     });
     $.__views.list && $.addTopLevelView($.__views.list);
-    $.__views.__alloyId3 = Ti.UI.createView({
+    $.__views.__alloyId5 = Ti.UI.createView({
         top: Alloy.Globals.top,
         height: "50dp",
         width: Ti.UI.FILL,
         backgroundColor: "#669900",
-        id: "__alloyId3"
+        id: "__alloyId5"
     });
-    $.__views.list.add($.__views.__alloyId3);
-    $.__views.__alloyId4 = Ti.UI.createView({
+    $.__views.list.add($.__views.__alloyId5);
+    $.__views.__alloyId6 = Ti.UI.createView({
         left: 10,
         width: 40,
         height: 40,
-        id: "__alloyId4"
+        id: "__alloyId6"
     });
-    $.__views.__alloyId3.add($.__views.__alloyId4);
-    $.__views.__alloyId5 = Ti.UI.createImageView({
+    $.__views.__alloyId5.add($.__views.__alloyId6);
+    $.__views.__alloyId7 = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
         color: "#fff",
         backgroundColor: "transparent",
         image: "/images/icon.png",
         touchEnabled: false,
-        id: "__alloyId5"
+        id: "__alloyId7"
     });
-    $.__views.__alloyId4.add($.__views.__alloyId5);
+    $.__views.__alloyId6.add($.__views.__alloyId7);
     $.__views.headerTitle = Ti.UI.createLabel({
         left: "60dp",
         color: "#fff",
@@ -239,15 +252,15 @@ function Controller() {
         text: "Clienti",
         id: "headerTitle"
     });
-    $.__views.__alloyId3.add($.__views.headerTitle);
-    $.__views.__alloyId6 = Ti.UI.createView({
+    $.__views.__alloyId5.add($.__views.headerTitle);
+    $.__views.__alloyId8 = Ti.UI.createView({
         right: 60,
         width: 40,
         height: 40,
-        id: "__alloyId6"
+        id: "__alloyId8"
     });
-    $.__views.__alloyId3.add($.__views.__alloyId6);
-    refreshData ? $.__views.__alloyId6.addEventListener("click", refreshData) : __defers["$.__views.__alloyId6!click!refreshData"] = true;
+    $.__views.__alloyId5.add($.__views.__alloyId8);
+    refreshData ? $.__views.__alloyId8.addEventListener("click", refreshData) : __defers["$.__views.__alloyId8!click!refreshData"] = true;
     $.__views.refreshImage = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
@@ -255,15 +268,15 @@ function Controller() {
         image: "/images/ic_action_refresh.png",
         id: "refreshImage"
     });
-    $.__views.__alloyId6.add($.__views.refreshImage);
-    $.__views.__alloyId7 = Ti.UI.createView({
+    $.__views.__alloyId8.add($.__views.refreshImage);
+    $.__views.__alloyId9 = Ti.UI.createView({
         right: 10,
         width: 40,
         height: 40,
-        id: "__alloyId7"
+        id: "__alloyId9"
     });
-    $.__views.__alloyId3.add($.__views.__alloyId7);
-    showHideSearchBar ? $.__views.__alloyId7.addEventListener("click", showHideSearchBar) : __defers["$.__views.__alloyId7!click!showHideSearchBar"] = true;
+    $.__views.__alloyId5.add($.__views.__alloyId9);
+    showHideSearchBar ? $.__views.__alloyId9.addEventListener("click", showHideSearchBar) : __defers["$.__views.__alloyId9!click!showHideSearchBar"] = true;
     $.__views.searchImage = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
@@ -271,7 +284,7 @@ function Controller() {
         image: "/images/ic_action_search.png",
         id: "searchImage"
     });
-    $.__views.__alloyId7.add($.__views.searchImage);
+    $.__views.__alloyId9.add($.__views.searchImage);
     $.__views.tblView = Ti.UI.createTableView({
         top: Alloy.Globals.tableTop,
         separatorColor: "#0099CC",
@@ -317,6 +330,19 @@ function Controller() {
     var args = arguments[0] || {};
     var sobject = args["sobject"];
     Ti.API.info("[dynaforce] PASSED SOBJECT: " + sobject);
+    var osname = Ti.Platform.osname, height = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight), width = Ti.Platform.displayCaps.platformWidth;
+    var IS_IOS;
+    var IS_ANDROID;
+    if ("android" == osname) {
+        IS_ANDROID = true;
+        IS_IOS = false;
+    } else {
+        IS_ANDROID = false;
+        IS_IOS = true;
+    }
+    var IS_TABLET = "ipad" === osname || "android" === osname && (width > 899 || height > 899);
+    var rowHeight;
+    rowHeight = IS_TABLET ? 120 : 200;
     var selectList = "Id, Name, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c";
     loadTableData();
     $.list.open();
@@ -324,8 +350,14 @@ function Controller() {
         $.destroy();
     });
     var visible = false;
-    __defers["$.__views.__alloyId6!click!refreshData"] && $.__views.__alloyId6.addEventListener("click", refreshData);
-    __defers["$.__views.__alloyId7!click!showHideSearchBar"] && $.__views.__alloyId7.addEventListener("click", showHideSearchBar);
+    $.list.addEventListener("focus", function() {
+        if (Alloy.Globals.dynaforce.getChanges()) {
+            refreshData();
+            Alloy.Globals.dynaforce.resetChanges();
+        }
+    });
+    __defers["$.__views.__alloyId8!click!refreshData"] && $.__views.__alloyId8.addEventListener("click", refreshData);
+    __defers["$.__views.__alloyId9!click!showHideSearchBar"] && $.__views.__alloyId9.addEventListener("click", showHideSearchBar);
     __defers["$.__views.search!return!searchData"] && $.__views.search.addEventListener("return", searchData);
     __defers["$.__views.search!change!searchDataNoHide"] && $.__views.search.addEventListener("change", searchDataNoHide);
     _.extend($, exports);

@@ -5,9 +5,14 @@ $.activityIndicator.hide();
 var sobject = 'Partita_Aperta__c';
 var accountId = args['accountId'];
 
+var osname = Ti.Platform.osname,
+        version = Ti.Platform.version,
+        height = Ti.Platform.displayCaps.platformHeight,
+        width = Ti.Platform.displayCaps.platformWidth;
+        
 var IS_IOS;
 var IS_ANDROID;
-if (Ti.Platform.name=='android') {
+if (osname=='android') {
 	IS_ANDROID = true;
 	IS_IOS = false;
 } else {
@@ -15,6 +20,18 @@ if (Ti.Platform.name=='android') {
 	IS_IOS = true;
 }
 
+var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 900));
+
+var rowHeight;
+if (IS_TABLET) {
+	rowHeight = 90;
+} else {
+	rowHeight = 150;
+}
+
+var ctrlWidth = 140;
+
+var amount_to_pay = 0;
 var selected_row_ids = [];
 	
 var data = {};
@@ -23,7 +40,7 @@ var data = {};
 
 //var selectList = 'Id, Name, Email, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c';
 
-var selectList = 'Id, Data_Documento__c, Data_Scadenza__c, Importo__c, Pagato__c, Scadenza__c, Scaduta__c'; 
+var selectList = 'Id, Name, Data_Documento__c, Data_Scadenza__c, Importo__c, Pagato__c, Scadenza__c, Scaduta__c'; 
 
 
 
@@ -63,7 +80,7 @@ function loadTableData() {
 		    rowId:rowset.fieldByName('Id'), // custom property, useful for determining the row during events
 		    payed: rowset.fieldByName('Pagato__c'),
 		    //rowId:'Pippo', 
-		    height:100,
+		    height: rowHeight,
 			backgroundColor: '#ffffff',
 		});
 		
@@ -74,16 +91,41 @@ function loadTableData() {
 			layout: 'horizontal',
 			horizontalWrap: true
 		});
-	        
+		
+
+// IMPORTO    
+	    var vImporto = Ti.UI.createView({
+	    	left: 10,
+	    	top: 10,
+			height: Ti.UI.SIZE,
+			width: Ti.UI.SIZE,
+			layout: 'vertical',
+	    });
+	    
+	    var lblLblImporto = Ti.UI.createLabel({
+	    	left: 0,
+			top: 0,
+			width: ctrlWidth,
+			height: Ti.UI.SIZE,
+			font: { fontSize:12 },
+			color: '#000000',
+			text: 'Importo'
+	    });
+	    
 		var lblImporto = Ti.UI.createLabel({
-			left: 10,
-			top:10,
-			width: 150,
+			left: 0,
+			top:5,
+			width: ctrlWidth,
 			height: Ti.UI.SIZE,
 			font: { fontSize:20 },
 			color: '#000000',
 			text: rowset.fieldByName('Importo__c') + ' EUR'
 		});
+		
+		vImporto.add(lblLblImporto);
+		vImporto.add(lblImporto);
+// /IMPORTO
+
 
 		Ti.API.info('[EasyCashIn] Importo: ' + rowset.fieldByName('Importo__c'));
 		Ti.API.info('[EasyCashIn] Pagato: ' + rowset.fieldByName('Pagato__c'));
@@ -92,26 +134,49 @@ function loadTableData() {
 		var lblPayed = Ti.UI.createLabel({
 			left: 10,
 			top:10,
-			width: 150,
+			width: ctrlWidth,
 			height: Ti.UI.SIZE,
 			font: { fontSize:20 },
 			text: getLabelText(rowset.fieldByName('Pagato__c')),
 			color: getLabelColor(rowset.fieldByName('Pagato__c'))
 		});
-		
+
+// SCADENZA	
+		var vScadenza = Ti.UI.createView({
+	    	left: 10,
+	    	top:10,
+			height: Ti.UI.SIZE,
+			width: Ti.UI.SIZE,
+			layout: 'vertical',
+	    });
+	    
+	    var lblLblScadenza = Ti.UI.createLabel({
+	    	left: 0,
+			top:0,
+			width: ctrlWidth,
+			height: Ti.UI.SIZE,
+			font: { fontSize:12 },
+			color: '#000000',
+			text: 'Data Scadenza'
+	    });
+	    
 		var lblScadenza = Ti.UI.createLabel({
-			left: 10,
-			top:10,
-			width: 150,
+			left: 0,
+			top:5,
+			width: ctrlWidth,
 			height: Ti.UI.SIZE,
 			font: { fontSize:20 },
 			color: '#000000',
 			text: rowset.fieldByName('Data_Scadenza__c')
 		});
 		
+		vScadenza.add(lblLblScadenza);
+		vScadenza.add(lblScadenza);
+// /SCADENZA
+
 		var payView = Ti.UI.createView({
 			height: Ti.UI.SIZE,
-			width: 150,
+			width: ctrlWidth,
 			left: 10,
 			top:10,
 			layout: 'horizontal',
@@ -147,15 +212,69 @@ function loadTableData() {
 		  }
 		  $.footerTitle.setText('Totale selezionato: ' + amount_to_pay + ' EUR');
 		});
-
+		
+		/*
+		 * we add the Document Number only on the tablet
+		 */
+		if (IS_TABLET) {
+			var vDoc = Ti.UI.createView({
+		    	left: 10,
+		    	top: 10,
+				height: Ti.UI.SIZE,
+				width: Ti.UI.SIZE,
+				layout: 'vertical',
+		    });
+		    
+		    var lblLblDoc = Ti.UI.createLabel({
+		    	left: 0,
+				top: 0,
+				width: ctrlWidth,
+				height: Ti.UI.SIZE,
+				font: { fontSize:12 },
+				color: '#000000',
+				text: '# Documento'
+		    });
+		    
+			var lblDoc = Ti.UI.createLabel({
+				left: 0,
+				top:5,
+				width: ctrlWidth,
+				height: Ti.UI.SIZE,
+				font: { fontSize:20 },
+				color: '#000000',
+				text: rowset.fieldByName('Name')
+			});
+			
+			vDoc.add(lblLblDoc);
+			vDoc.add(lblDoc);	
+			view.add(vDoc);
+		}
+		
 		payView.add(lblPay);
 		payView.add(paySwitch);
-		
-		view.add(lblImporto);
+
+		view.add(vImporto);
 		view.add(lblPayed);
-		view.add(lblScadenza);
+		view.add(vScadenza);
 		if (rowset.fieldByName('Pagato__c')=='false')
 			view.add(payView);
+		
+		var needSync = Alloy.Globals.dynaforce.needSync({
+			Id: rowset.fieldByName('Id')
+		});
+		
+		if (needSync) {
+			var btnSync = Titanium.UI.createView({
+			   top: 10,
+			   left: 10,
+			   width: 40,
+			   height: 40,
+			   backgroundImage: "/images/not_sync.png",
+			   touchEnabled: true,
+			   rowId: rowset.fieldByName('Id')
+			});
+			view.add(btnSync);
+		}
 		
 		row.add(view);
 		tableData.push(row);
@@ -181,19 +300,24 @@ var popup_visible = false;
 function showHidePopup() {
 	//alert('ciao');
 	//var visible = $.searchWrap.getVisible();
-	if (popup_visible) {
-		$.popup.hide();
-		$.overlay.hide();
-		popup_visible = false;
-		
-		//if ($.search.value == '') loadTableData();
-	}
-	else {
-		$.popup.show();
-		$.overlay.show();
-		popup_visible = true;
+	if (amount_to_pay!=0) {
+		if (popup_visible) {
+			$.popup.hide();
+			$.overlay.hide();
+			popup_visible = false;
+			
+			//if ($.search.value == '') loadTableData();
+		}
+		else {
+			$.popup.show();
+			$.overlay.show();
+			popup_visible = true;
+		}
+	} else {
+		alert('Non hai selezionato nessuna fattura per eseguire il pagamento');
 	}
 }
+
 
 function pay() {
 	$.activityIndicator.setMessage('Perform payment');
@@ -212,17 +336,30 @@ function pay() {
 		});
 	}
 	
-	$.activityIndicator.setMessage('Sync Data to server');
-	Alloy.Globals.dynaforce.pushDataToServer({
-		success: function() {
-			Ti.API.info('[table] push data SUCCESS');
-			showHidePopup();
-			loadTableData();
-			$.activityIndicator.hide();
-		}
-	});
 	
+	if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
+		$.activityIndicator.setMessage('Sync Data to server');
+		Alloy.Globals.dynaforce.pushDataToServer({
+			success: function() {
+				Ti.API.info('[table] push data SUCCESS');
+				showHidePopup();
+				loadTableData();
+				Alloy.Globals.dynaforce.setChanges();
+				$.activityIndicator.hide();
+			}
+		});
+	} else {
+		showHidePopup();
+		loadTableData();
+		$.activityIndicator.hide();
+	}
 }
+
+function posPay() {
+	var mposView = Alloy.createController('mpos', {amount: amount_to_pay}).getView();
+	mposView.open();
+}
+
 
 function getLabelColor(payed) {
 	var payedColor;

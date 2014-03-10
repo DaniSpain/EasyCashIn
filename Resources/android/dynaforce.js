@@ -43,6 +43,8 @@ function retrieveImageList(table) {
 
 var LAST_SYNC = Ti.App.Properties.getString("dynaforce.lastSync");
 
+var LOCAL_CHANGES = false;
+
 exports.LIST_LAYOUT_TABLE = "ListLayout";
 
 exports.DETAIL_LAYOUT_TABLE = "DetailLayout";
@@ -82,6 +84,9 @@ var sobjectSync = [ {
     synched: false
 }, {
     sobject: "Partita_Aperta__c",
+    synched: false
+}, {
+    sobject: "History__c",
     synched: false
 } ];
 
@@ -362,6 +367,7 @@ exports.startSync = function(callbacks) {
                         type: "GET",
                         url: "/query/?q=" + Ti.Network.encodeURIComponent(queryString),
                         callback: function(data) {
+                            var idList = [];
                             var db = Ti.Database.open(Alloy.Globals.dbName);
                             Ti.API.info("[dynaforce] DATA: " + JSON.stringify(data));
                             var records = data.records;
@@ -370,6 +376,7 @@ exports.startSync = function(callbacks) {
                                 var record = records[i];
                                 var statement = "INSERT OR REPLACE INTO " + sobject + "(";
                                 var values = "VALUES (";
+                                idList.push(record.Id);
                                 for (var j = 0; usedFields.length > j; j++) {
                                     var field = usedFields[j];
                                     usedFieldTypes[j];
@@ -616,4 +623,63 @@ exports.executeQueue = function(callbacks) {
         Ti.API.info("[dynaforce] QUEUE EXECUTION COMPLETE");
         callbacks.success();
     }
+};
+
+exports.needSync = function(opts) {
+    if (opts.Id) {
+        var db = Ti.Database.open(Alloy.Globals.dbName);
+        Ti.API.info("[dynaforce] SELECT rowId FROM " + exports.SYNCFIELD_TABLE + ' WHERE rowId="' + opts.Id + '" LIMIT 1');
+        var rowset = db.execute("SELECT rowId FROM " + exports.SYNCFIELD_TABLE + ' WHERE rowId="' + opts.Id + '" LIMIT 1');
+        return rowset.rowCount > 0 ? true : false;
+    }
+    return false;
+};
+
+exports.setChanges = function() {
+    LOCAL_CHANGES = true;
+};
+
+exports.getChanges = function() {
+    return LOCAL_CHANGES;
+};
+
+exports.resetChanges = function() {
+    LOCAL_CHANGES = false;
+};
+
+exports.cleanData = function() {
+    var db = Ti.Database.open(Alloy.Globals.dbName);
+    Ti.API.info("[dynaforce] SELECT Id FROM " + sobject);
+    try {
+        var idSet = db.execute("SELECT Id FROM " + sobject);
+    } catch (e) {
+        Ti.API.error("[dynaforce] Exception retriving records: " + e);
+    }
+    if (idSet) {
+        while (idSet.isValidRow()) {
+            var locId = idSet.fieldByName("Id");
+            if (idList.indexOf(locId) >= 0) ; else {
+                Ti.API.info("[dynaforce] SELECT rowId FROM " + exports.SYNC_TABLE + ' WHERE rowId = "' + locId + '" LIMIT 1');
+                try {
+                    var syncSet = db.execute("SELECT rowId FROM " + exports.SYNC_TABLE + ' WHERE rowId = "' + locId + '" LIMIT 1');
+                } catch (e) {
+                    Ti.API.error("[dynaforce] Exception retriving records from sync table: " + e);
+                }
+                if (syncSet) {
+                    if (0 == syncSet.rowCount) {
+                        Ti.API.info("[dynaforce] DELETE FROM " + sobject + " WHERE Id = " + locId);
+                        try {
+                            db.execute("DELETE FROM " + sobject + ' WHERE Id = "' + locId + '"');
+                        } catch (e) {
+                            Ti.API.error("[dynaforce] Exception deleting record: " + e);
+                        }
+                    }
+                    syncSet.close();
+                }
+            }
+            idSet.next();
+        }
+        idSet.close();
+    }
+    db.close();
 };

@@ -6,6 +6,7 @@
 
 
 var LAST_SYNC = Ti.App.Properties.getString('dynaforce.lastSync');
+var LOCAL_CHANGES = false;
 
 exports.LIST_LAYOUT_TABLE = "ListLayout";
 exports.DETAIL_LAYOUT_TABLE = "DetailLayout";
@@ -55,6 +56,10 @@ var sobjectSync = [
 },
 {
 	sobject: 'Partita_Aperta__c',
+	synched: false,
+},
+{
+	sobject: 'History__c',
 	synched: false,
 },
 ];
@@ -563,6 +568,7 @@ exports.startSync = function(callbacks) {
 						url:'/query/?q='+Ti.Network.encodeURIComponent(queryString),
 						callback: function(data) {
 							
+							var idList = [];
 							var db = Ti.Database.open(Alloy.Globals.dbName);
 							
 							Ti.API.info('[dynaforce] DATA: ' + JSON.stringify(data));
@@ -574,6 +580,7 @@ exports.startSync = function(callbacks) {
 								var record = records[i];
 								var statement = 'INSERT OR REPLACE INTO ' + sobject + '(';
 								var values = 'VALUES ('; 
+								idList.push(record.Id);
 								
 								for (var j=0; j<usedFields.length; j++) {
 									var field = usedFields[j];
@@ -662,6 +669,9 @@ exports.startSync = function(callbacks) {
 							}
 							*/
 							/*********************************/
+							
+							
+							
 							
 							db.close();
 							
@@ -950,7 +960,9 @@ exports.pushDataToServer = function(callbacks) {
 };
 
 
-
+/**
+ * pushes the objects to salesforce processing the syncQueue queue		
+ */
 exports.executeQueue = function(callbacks) {
 	if (syncQueue.length>0) {
 		var db = Ti.Database.open(Alloy.Globals.dbName);
@@ -1023,4 +1035,91 @@ exports.executeQueue = function(callbacks) {
 		//callbacks.success();
 	}
 };
+
+
+/**
+ * Checks in the Sync table if a specified object exists.
+ * If TRUE, this means that this object need to be pushed to the server and synchronized
+ * @param opts:
+ * 		opts.objId: the ID of the object to check
+ * @return Boolean check 
+ */
+exports.needSync = function (opts) {
+	if (opts.Id) {
+		var db = Ti.Database.open(Alloy.Globals.dbName); 
+		Ti.API.info('[dynaforce] SELECT rowId FROM ' + exports.SYNCFIELD_TABLE + ' WHERE rowId="' + opts.Id + '" LIMIT 1');
+		var rowset = db.execute('SELECT rowId FROM ' + exports.SYNCFIELD_TABLE + ' WHERE rowId="' + opts.Id + '" LIMIT 1');
+		if (rowset.rowCount > 0) return true;
+		else return false;
+		rowset.close();
+		db.close();
+	} else return false;
+};
+
+
+/**
+ * tells the application if some change on data has occured, this is useful if you have to react to these changes
+ * in screens different from the current in which you are.
+ * To get the value in the other screens use getChanges()
+ * If you want to make these changes invisible use resetChanges()
+ * 
+ * @return Boolean
+ */
+exports.setChanges = function() {
+	LOCAL_CHANGES = true;
+};
+exports.getChanges = function() {
+	return LOCAL_CHANGES;
+};
+exports.resetChanges = function() {
+	LOCAL_CHANGES = false;
+};
+
+
+//TODO: da rivedere completamente
+exports.cleanData = function(callbacks) {
+	// cleaning deleted records
+	var db = Ti.Database.open(Alloy.Globals.dbName);
+	Ti.API.info('[dynaforce] SELECT Id FROM ' + sobject);
+	try {
+		var idSet = db.execute('SELECT Id FROM ' + sobject);
+	} catch (e) {
+		Ti.API.error('[dynaforce] Exception retriving records: ' + e);
+	}
+	if (idSet) {
+		while (idSet.isValidRow()) {
+			var locId = idSet.fieldByName("Id");
+			if (idList.indexOf(locId)>=0) {
+				//ok 
+			} else {
+				/* if the id exists locally but doesn't exist remotely
+				 * we have to check in the sync table first, if not exist also here
+				 * delete the record
+				 */
+				Ti.API.info('[dynaforce] SELECT rowId FROM ' + exports.SYNC_TABLE + ' WHERE rowId = "' + locId + '" LIMIT 1');
+				try {
+					var syncSet = db.execute('SELECT rowId FROM ' + exports.SYNC_TABLE + ' WHERE rowId = "' + locId + '" LIMIT 1');
+				} catch (e) {
+					Ti.API.error('[dynaforce] Exception retriving records from sync table: ' + e);
+				}
+				if (syncSet) {
+					if (syncSet.rowCount == 0) {
+						//this means that the record is not to synchronize
+						Ti.API.info('[dynaforce] DELETE FROM ' + sobject + ' WHERE Id = ' + locId);
+						try {
+							db.execute('DELETE FROM ' + sobject + ' WHERE Id = "' + locId + '"');
+						} catch (e) {
+							Ti.API.error('[dynaforce] Exception deleting record: ' + e);
+						}
+					}
+					syncSet.close();
+				}
+			}
+			idSet.next();
+		}
+		idSet.close();
+	}
+	db.close();
+};
+
 

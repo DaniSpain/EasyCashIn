@@ -83,6 +83,7 @@
 	image: "/images/ic_action_refresh.png",
 }
 
+
 ".dynaIcon" : {  
 	height: Ti.UI.FILL,
 	width: Ti.UI.FILL,
@@ -135,7 +136,7 @@
 }
 
 ".popup" : {
-	width: "80%",
+	width: 300,
 	height: Ti.UI.SIZE,
 	backgroundColor: "#ffffff",
 	opacity: 1.0

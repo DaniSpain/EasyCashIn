@@ -7,6 +7,29 @@ var sobject = args['sobject'];
 Ti.API.info('[dynaforce] PASSED SOBJECT: ' + sobject);
 
 
+var osname = Ti.Platform.osname,
+        version = Ti.Platform.version,
+        height = Ti.Platform.displayCaps.platformHeight,
+        width = Ti.Platform.displayCaps.platformWidth;
+        
+var IS_IOS;
+var IS_ANDROID;
+if (osname=='android') {
+	IS_ANDROID = true;
+	IS_IOS = false;
+} else {
+	IS_ANDROID = false;
+	IS_IOS = true;
+}
+
+var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 900));
+
+var rowHeight;
+if (IS_TABLET) {
+	rowHeight = 120;
+} else {
+	rowHeight = 200;
+}
 
 //var db = Ti.Database.open(Alloy.Globals.dbName);
 
@@ -79,7 +102,7 @@ function loadTableData(whereCondition) {
 		    selectedBackgroundColor:'#ffffff',
 		    rowId:rowset.fieldByName('Id'), // custom property, useful for determining the row during events
 		    //rowId:'Pippo', 
-		    height:200,
+		    height: rowHeight,
 			backgroundColor: '#ffffff',
 		});
 		
@@ -176,8 +199,11 @@ function loadTableData(whereCondition) {
 			btnPartiteAperte.addEventListener('click',function(e)
 			{
 			   	//alert(e.rowData.rowId);
+			   	$.activityIndicator.setMessage('Loading Data');
+			   	$.activityIndicator.show();
 			   	var tableView = Alloy.createController('table', {accountId: e.source.rowId}).getView();
 				tableView.open();
+				$.activityIndicator.hide();
 			});
 			
 			btnMail = Titanium.UI.createView({
@@ -207,10 +233,19 @@ function loadTableData(whereCondition) {
 			   	height: 64,
 			   	backgroundImage: '/images/activity.png',
 			   	color: '#ffffff',
+			   	rowId: rowset.fieldByName('Id'),
 			  	touchEnabled: true
 			});
 		
-		
+			btnActivity.addEventListener('click',function(e)
+			{
+			   	//alert(e.rowData.rowId);
+			   	$.activityIndicator.setMessage('Loading History');
+			   	$.activityIndicator.show();
+			   	var historyView = Alloy.createController('history', {accountId: e.source.rowId}).getView();
+				historyView.open();
+				$.activityIndicator.hide();
+			});
 		
 		
 		rightview.add(btnPartiteAperte);
@@ -310,6 +345,13 @@ function refreshData() {
 		alert('Cannot perform this operation without connectivity');
 	}
 }
+
+$.list.addEventListener('focus', function() {
+    if (Alloy.Globals.dynaforce.getChanges()) {
+    	refreshData();
+    	Alloy.Globals.dynaforce.resetChanges();
+    }
+});
 /*
 $.tblView.addEventListener('longpress', function(e){
   alert('Long pressed ' + e.rowData.rowId);

@@ -27,6 +27,8 @@ exports.getDateTimeObject = function(sfdcDate) {
 	datetime.setHours(hour);
 	datetime.setMinutes(min);
 	datetime.setSeconds(sec);
+	datetime.getTimezoneOffset();
+	console.log('[dynaforce][sfdcdate] Timezone Offset: ' + datetime.getTimezoneOffset());
 	return datetime;
 };
 

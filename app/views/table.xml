@@ -38,7 +38,7 @@
         		<View class="separator"></View>
         		<Button class="popupButton" title="Bonifico" onClick="pay"></Button>
         		<View class="separator"></View>
-        		<Button class="popupButton" title="Carta/Bancomat"></Button>
+        		<Button class="popupButton" title="Carta/Bancomat" onClick="posPay" platform="android"></Button>
         	</View>
         </View>
         <!-- /POPUP -->

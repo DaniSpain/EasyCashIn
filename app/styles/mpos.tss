@@ -1,0 +1,11 @@
+
+"#amount" : {
+	height: Ti.UI.SIZE,
+	width: Ti.UI.SIZE,
+	color: "#0099CC",
+	font: {
+		fontSize: '23sp',
+	  	fontWeight: 'normal'
+	}
+}
+

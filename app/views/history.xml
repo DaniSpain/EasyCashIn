@@ -1,0 +1,18 @@
+<Alloy>
+	<Window navBarHidden="true">
+		<View class="header">
+    	  <View class="iconWrap">
+	       <ImageView id="backImage" onClick="closeWindow" />
+	      </View>
+	      <Label id="headerTitle">Activity History</Label>
+	      
+	  
+	    </View>
+	    
+		<TableView id="tblView">
+			
+        </TableView>
+        
+        
+	</Window>
+</Alloy>

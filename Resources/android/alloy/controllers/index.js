@@ -27,31 +27,31 @@ function Controller() {
     });
     $.__views.index && $.addTopLevelView($.__views.index);
     showIndicator ? $.__views.index.addEventListener("open", showIndicator) : __defers["$.__views.index!open!showIndicator"] = true;
-    $.__views.__alloyId0 = Ti.UI.createView({
+    $.__views.__alloyId2 = Ti.UI.createView({
         top: Alloy.Globals.top,
         height: "50dp",
         width: Ti.UI.FILL,
         backgroundColor: "#669900",
-        id: "__alloyId0"
+        id: "__alloyId2"
     });
-    $.__views.index.add($.__views.__alloyId0);
-    $.__views.__alloyId1 = Ti.UI.createView({
+    $.__views.index.add($.__views.__alloyId2);
+    $.__views.__alloyId3 = Ti.UI.createView({
         left: 10,
         width: 40,
         height: 40,
-        id: "__alloyId1"
+        id: "__alloyId3"
     });
-    $.__views.__alloyId0.add($.__views.__alloyId1);
-    $.__views.__alloyId2 = Ti.UI.createImageView({
+    $.__views.__alloyId2.add($.__views.__alloyId3);
+    $.__views.__alloyId4 = Ti.UI.createImageView({
         height: Ti.UI.FILL,
         width: Ti.UI.FILL,
         color: "#fff",
         backgroundColor: "transparent",
         image: "/images/icon.png",
         touchEnabled: false,
-        id: "__alloyId2"
+        id: "__alloyId4"
     });
-    $.__views.__alloyId1.add($.__views.__alloyId2);
+    $.__views.__alloyId3.add($.__views.__alloyId4);
     $.__views.headerTitle = Ti.UI.createLabel({
         width: Ti.UI.SIZE,
         height: Ti.UI.SIZE,
@@ -64,7 +64,7 @@ function Controller() {
         text: "EasyCashIn",
         id: "headerTitle"
     });
-    $.__views.__alloyId0.add($.__views.headerTitle);
+    $.__views.__alloyId2.add($.__views.headerTitle);
     $.__views.content = Ti.UI.createView({
         top: Alloy.Globals.tableTop,
         height: Ti.UI.FILL,
