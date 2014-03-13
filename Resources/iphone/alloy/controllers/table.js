@@ -525,7 +525,8 @@ function Controller() {
     $.activityIndicator.hide();
     var sobject = "Partita_Aperta__c";
     var accountId = args["accountId"];
-    var osname = Ti.Platform.osname, height = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight), width = Ti.Platform.displayCaps.platformWidth;
+    var osname = Ti.Platform.osname, width = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, 
+    Ti.Platform.displayCaps.platformWidth);
     var IS_IOS;
     var IS_ANDROID;
     if ("android" == osname) {
@@ -535,7 +536,7 @@ function Controller() {
         IS_ANDROID = false;
         IS_IOS = true;
     }
-    var IS_TABLET = "ipad" === osname || "android" === osname && (width > 899 || height > 899);
+    var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
     var rowHeight;
     rowHeight = IS_TABLET ? 90 : 150;
     var ctrlWidth = 140;

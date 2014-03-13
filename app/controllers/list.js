@@ -113,24 +113,49 @@ function loadTableData(whereCondition) {
 			layout: 'horizontal',
 		});
 	        
-		var leftview = Titanium.UI.createView({
-		  	left: 0,
-			height: Ti.UI.SIZE,
-			width: '45%',
-			layout: 'vertical',
-			top: "10dp",
-			bottom: 10,
-		});
+		var leftview;
+		var rightview;
 		
-		var rightview = Titanium.UI.createView({
-		  	left: 10,
-			height: Ti.UI.SIZE,
-			width: '45%',
-			top: "10dp",
-			bottom: 10,
-			layout: 'horizontal',
-			horizontalWrap: true,
-		});
+		if (IS_TABLET) {
+			leftview = Titanium.UI.createView({
+			  	left: 0,
+				height: Ti.UI.SIZE,
+				width: Ti.UI.SIZE,
+				layout: 'horizontal',
+				top: "10dp",
+				bottom: 10,
+			});
+			
+			rightview = Titanium.UI.createView({
+			  	left: 10,
+				height: Ti.UI.SIZE,
+				width: Ti.UI.SIZE,
+				top: "10dp",
+				bottom: 10,
+				layout: 'horizontal',
+				horizontalWrap: true,
+			});
+		} else {
+			leftview = Titanium.UI.createView({
+			  	left: 0,
+				height: Ti.UI.SIZE,
+				width: '45%',
+				layout: 'vertical',
+				top: "10dp",
+				bottom: 10,
+			});
+			
+			rightview = Titanium.UI.createView({
+			  	left: 10,
+				height: Ti.UI.SIZE,
+				width: '45%',
+				top: "10dp",
+				bottom: 10,
+				layout: 'horizontal',
+				horizontalWrap: true,
+			});
+		}
+	
 		
 		/*
 		for (var i=0; i<fieldList.length; i++) {
@@ -277,6 +302,35 @@ $.list.open();
 $.list.addEventListener('close', function() {
     $.destroy();
 });
+
+$.tblView.addEventListener('scrollend', function() {
+	addLoaderRow();
+});
+
+/*
+ * adds the loading row to perform progressiv data loading
+ */
+var loaderShown = false;
+function addLoaderRow() {
+	if (!loaderShown) {
+		var row = Ti.UI.createTableViewRow({
+			height: 100,
+			width: Ti.UI.FILL
+		});
+		
+		var lblLoading = Ti.UI.createLabel({
+			width: Ti.UI.SIZE,
+			height: Ti.UI.SIZE,
+			font: { fontSize:14 },
+			color: '#0099CC',
+			text: 'Loading'
+		});
+		
+		row.add(lblLoading);
+		$.tblView.appendRow(row);
+		loaderShown = true;
+	}
+}
 
 var visible = false;
 function showHideSearchBar() {

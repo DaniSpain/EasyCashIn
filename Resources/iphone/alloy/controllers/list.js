@@ -25,23 +25,45 @@ function Controller() {
                 width: Ti.UI.FILL,
                 layout: "horizontal"
             });
-            var leftview = Titanium.UI.createView({
-                left: 0,
-                height: Ti.UI.SIZE,
-                width: "45%",
-                layout: "vertical",
-                top: "10dp",
-                bottom: 10
-            });
-            var rightview = Titanium.UI.createView({
-                left: 10,
-                height: Ti.UI.SIZE,
-                width: "45%",
-                top: "10dp",
-                bottom: 10,
-                layout: "horizontal",
-                horizontalWrap: true
-            });
+            var leftview;
+            var rightview;
+            if (IS_TABLET) {
+                leftview = Titanium.UI.createView({
+                    left: 0,
+                    height: Ti.UI.SIZE,
+                    width: Ti.UI.SIZE,
+                    layout: "horizontal",
+                    top: "10dp",
+                    bottom: 10
+                });
+                rightview = Titanium.UI.createView({
+                    left: 10,
+                    height: Ti.UI.SIZE,
+                    width: Ti.UI.SIZE,
+                    top: "10dp",
+                    bottom: 10,
+                    layout: "horizontal",
+                    horizontalWrap: true
+                });
+            } else {
+                leftview = Titanium.UI.createView({
+                    left: 0,
+                    height: Ti.UI.SIZE,
+                    width: "45%",
+                    layout: "vertical",
+                    top: "10dp",
+                    bottom: 10
+                });
+                rightview = Titanium.UI.createView({
+                    left: 10,
+                    height: Ti.UI.SIZE,
+                    width: "45%",
+                    top: "10dp",
+                    bottom: 10,
+                    layout: "horizontal",
+                    horizontalWrap: true
+                });
+            }
             var lblName = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
@@ -152,6 +174,26 @@ function Controller() {
         $.tblView.setData(tableData);
         rowset.close(tableData);
         db.close();
+    }
+    function addLoaderRow() {
+        if (!loaderShown) {
+            var row = Ti.UI.createTableViewRow({
+                height: 100,
+                width: Ti.UI.FILL
+            });
+            var lblLoading = Ti.UI.createLabel({
+                width: Ti.UI.SIZE,
+                height: Ti.UI.SIZE,
+                font: {
+                    fontSize: 14
+                },
+                color: "#0099CC",
+                text: "Loading"
+            });
+            row.add(lblLoading);
+            $.tblView.appendRow(row);
+            loaderShown = true;
+        }
     }
     function showHideSearchBar() {
         if (visible) {
@@ -330,7 +372,8 @@ function Controller() {
     var args = arguments[0] || {};
     var sobject = args["sobject"];
     Ti.API.info("[dynaforce] PASSED SOBJECT: " + sobject);
-    var osname = Ti.Platform.osname, height = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight), width = Ti.Platform.displayCaps.platformWidth;
+    var osname = Ti.Platform.osname, width = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, 
+    Ti.Platform.displayCaps.platformWidth);
     var IS_IOS;
     var IS_ANDROID;
     if ("android" == osname) {
@@ -340,7 +383,7 @@ function Controller() {
         IS_ANDROID = false;
         IS_IOS = true;
     }
-    var IS_TABLET = "ipad" === osname || "android" === osname && (width > 899 || height > 899);
+    var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
     var rowHeight;
     rowHeight = IS_TABLET ? 120 : 200;
     var selectList = "Id, Name, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c";
@@ -349,6 +392,10 @@ function Controller() {
     $.list.addEventListener("close", function() {
         $.destroy();
     });
+    $.tblView.addEventListener("scrollend", function() {
+        addLoaderRow();
+    });
+    var loaderShown = false;
     var visible = false;
     $.list.addEventListener("focus", function() {
         if (Alloy.Globals.dynaforce.getChanges()) {
