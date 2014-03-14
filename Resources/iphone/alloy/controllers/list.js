@@ -67,10 +67,10 @@ function Controller() {
             var lblName = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 150,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 16
+                    fontSize: LBL_NAME_SIZE
                 },
                 color: "#000000",
                 horizontalWrap: true,
@@ -79,10 +79,10 @@ function Controller() {
             var lblTotal = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 200,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 14
+                    fontSize: "16sp"
                 },
                 color: "#669900",
                 text: rowset.fieldByName("Totale_Partite_Aperte__c") + " EUR"
@@ -90,10 +90,10 @@ function Controller() {
             var lblFirstDate = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 200,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 12
+                    fontSize: "14sp"
                 },
                 color: "#0099CC",
                 text: rowset.fieldByName("Data_Prima_Scadenza__c")
@@ -385,7 +385,17 @@ function Controller() {
     }
     var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
     var rowHeight;
-    rowHeight = IS_TABLET ? 120 : 200;
+    var LBL_NAME_SIZE;
+    var CTRL_WIDTH;
+    if (IS_TABLET) {
+        LBL_NAME_SIZE = "20sp";
+        CTRL_WIDTH = 150;
+        rowHeight = 120;
+    } else {
+        LBL_NAME_SIZE = "16sp";
+        CTRL_WIDTH = 150;
+        rowHeight = 200;
+    }
     var selectList = "Id, Name, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c";
     loadTableData();
     $.list.open();
