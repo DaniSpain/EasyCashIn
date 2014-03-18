@@ -25,30 +25,52 @@ function Controller() {
                 width: Ti.UI.FILL,
                 layout: "horizontal"
             });
-            var leftview = Titanium.UI.createView({
-                left: 0,
-                height: Ti.UI.SIZE,
-                width: "45%",
-                layout: "vertical",
-                top: "10dp",
-                bottom: 10
-            });
-            var rightview = Titanium.UI.createView({
-                left: 10,
-                height: Ti.UI.SIZE,
-                width: "45%",
-                top: "10dp",
-                bottom: 10,
-                layout: "horizontal",
-                horizontalWrap: true
-            });
+            var leftview;
+            var rightview;
+            if (IS_TABLET) {
+                leftview = Titanium.UI.createView({
+                    left: 0,
+                    height: Ti.UI.SIZE,
+                    width: Ti.UI.SIZE,
+                    layout: "horizontal",
+                    top: "10dp",
+                    bottom: 10
+                });
+                rightview = Titanium.UI.createView({
+                    left: 10,
+                    height: Ti.UI.SIZE,
+                    width: Ti.UI.SIZE,
+                    top: "10dp",
+                    bottom: 10,
+                    layout: "horizontal",
+                    horizontalWrap: true
+                });
+            } else {
+                leftview = Titanium.UI.createView({
+                    left: 0,
+                    height: Ti.UI.SIZE,
+                    width: "45%",
+                    layout: "vertical",
+                    top: "10dp",
+                    bottom: 10
+                });
+                rightview = Titanium.UI.createView({
+                    left: 10,
+                    height: Ti.UI.SIZE,
+                    width: "45%",
+                    top: "10dp",
+                    bottom: 10,
+                    layout: "horizontal",
+                    horizontalWrap: true
+                });
+            }
             var lblName = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 150,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 16
+                    fontSize: LBL_NAME_SIZE
                 },
                 color: "#000000",
                 horizontalWrap: true,
@@ -57,10 +79,11 @@ function Controller() {
             var lblTotal = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 200,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 14
+                    fontSize: "16sp",
+                    fontWeight: "bold"
                 },
                 color: "#669900",
                 text: rowset.fieldByName("Totale_Partite_Aperte__c") + " EUR"
@@ -68,10 +91,10 @@ function Controller() {
             var lblFirstDate = Ti.UI.createLabel({
                 left: 10,
                 top: 10,
-                width: 200,
+                width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: 12
+                    fontSize: "14sp"
                 },
                 color: "#0099CC",
                 text: rowset.fieldByName("Data_Prima_Scadenza__c")
@@ -152,6 +175,26 @@ function Controller() {
         $.tblView.setData(tableData);
         rowset.close(tableData);
         db.close();
+    }
+    function addLoaderRow() {
+        if (!loaderShown) {
+            var row = Ti.UI.createTableViewRow({
+                height: 100,
+                width: Ti.UI.FILL
+            });
+            var lblLoading = Ti.UI.createLabel({
+                width: Ti.UI.SIZE,
+                height: Ti.UI.SIZE,
+                font: {
+                    fontSize: 14
+                },
+                color: "#0099CC",
+                text: "Loading"
+            });
+            row.add(lblLoading);
+            $.tblView.appendRow(row);
+            loaderShown = true;
+        }
     }
     function showHideSearchBar() {
         if (visible) {
@@ -343,13 +386,27 @@ function Controller() {
     }
     var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
     var rowHeight;
-    rowHeight = IS_TABLET ? 120 : 200;
+    var LBL_NAME_SIZE;
+    var CTRL_WIDTH;
+    if (IS_TABLET) {
+        LBL_NAME_SIZE = "20sp";
+        CTRL_WIDTH = 150;
+        rowHeight = 120;
+    } else {
+        LBL_NAME_SIZE = "16sp";
+        CTRL_WIDTH = 150;
+        rowHeight = 200;
+    }
     var selectList = "Id, Name, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c";
     loadTableData();
     $.list.open();
     $.list.addEventListener("close", function() {
         $.destroy();
     });
+    $.tblView.addEventListener("scrollend", function() {
+        addLoaderRow();
+    });
+    var loaderShown = false;
     var visible = false;
     $.list.addEventListener("focus", function() {
         if (Alloy.Globals.dynaforce.getChanges()) {

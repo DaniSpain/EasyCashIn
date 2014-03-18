@@ -248,7 +248,8 @@ function Controller() {
     }
     function posPay() {
         var mposView = Alloy.createController("mpos", {
-            amount: amount_to_pay
+            amount: amount_to_pay,
+            rowids: selected_row_ids
         }).getView();
         mposView.open();
     }
@@ -481,28 +482,6 @@ function Controller() {
         id: "__alloyId25"
     });
     $.__views.__alloyId21.add($.__views.__alloyId25);
-    $.__views.__alloyId26 = Ti.UI.createButton({
-        height: 48,
-        width: Ti.UI.FILL,
-        top: 5,
-        left: 5,
-        right: 5,
-        color: "#0099CC",
-        backgroundColor: "#ffffff",
-        title: "Bonifico",
-        id: "__alloyId26"
-    });
-    $.__views.__alloyId21.add($.__views.__alloyId26);
-    pay ? $.__views.__alloyId26.addEventListener("click", pay) : __defers["$.__views.__alloyId26!click!pay"] = true;
-    $.__views.__alloyId27 = Ti.UI.createView({
-        height: 1,
-        width: Ti.UI.FILL,
-        left: 10,
-        right: 10,
-        backgroundColor: "#0099CC",
-        id: "__alloyId27"
-    });
-    $.__views.__alloyId21.add($.__views.__alloyId27);
     $.__views.activityIndicator = Ti.UI.createActivityIndicator({
         color: "#ffffff",
         font: {
@@ -549,13 +528,34 @@ function Controller() {
     $.table.addEventListener("close", function() {
         $.destroy();
     });
+    $.table.addEventListener("focus", function() {
+        var pay_status = Ti.App.Properties.getString("mpos.payok");
+        if (pay_status && "true" == pay_status) {
+            if (Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
+                $.activityIndicator.setMessage("Sync Data to server");
+                Alloy.Globals.dynaforce.pushDataToServer({
+                    success: function() {
+                        Ti.API.info("[table] push data SUCCESS");
+                        showHidePopup();
+                        loadTableData();
+                        Alloy.Globals.dynaforce.setChanges();
+                        $.activityIndicator.hide();
+                    }
+                });
+            } else {
+                showHidePopup();
+                loadTableData();
+                $.activityIndicator.hide();
+            }
+            Ti.App.Properties.setString("mpos.payok", "false");
+        }
+    });
     __defers["$.__views.backImage!click!closeWindow"] && $.__views.backImage.addEventListener("click", closeWindow);
     __defers["$.__views.__alloyId14!click!showHidePopup"] && $.__views.__alloyId14.addEventListener("click", showHidePopup);
     __defers["$.__views.__alloyId18!click!showHidePopup"] && $.__views.__alloyId18.addEventListener("click", showHidePopup);
     __defers["$.__views.__alloyId22!click!pay"] && $.__views.__alloyId22.addEventListener("click", pay);
     __defers["$.__views.__alloyId24!click!pay"] && $.__views.__alloyId24.addEventListener("click", pay);
-    __defers["$.__views.__alloyId26!click!pay"] && $.__views.__alloyId26.addEventListener("click", pay);
-    __defers["$.__views.__alloyId28!click!posPay"] && $.__views.__alloyId28.addEventListener("click", posPay);
+    __defers["$.__views.__alloyId26!click!posPay"] && $.__views.__alloyId26.addEventListener("click", posPay);
     _.extend($, exports);
 }
 

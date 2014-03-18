@@ -136,7 +136,7 @@ function loadTableData(whereCondition) {
 			});
 			
 			rightview = Titanium.UI.createView({
-			  	left: 10,
+			  	right: 10,
 				height: Ti.UI.SIZE,
 				width: Ti.UI.SIZE,
 				top: "10dp",
@@ -148,16 +148,16 @@ function loadTableData(whereCondition) {
 			leftview = Titanium.UI.createView({
 			  	left: 0,
 				height: Ti.UI.SIZE,
-				width: '45%',
+				width: Ti.UI.SIZE,
 				layout: 'vertical',
 				top: "10dp",
 				bottom: 10,
 			});
 			
 			rightview = Titanium.UI.createView({
-			  	left: 10,
+			  	right: 10,
 				height: Ti.UI.SIZE,
-				width: '45%',
+				width: Ti.UI.SIZE,
 				top: "10dp",
 				bottom: 10,
 				layout: 'horizontal',
@@ -190,7 +190,7 @@ function loadTableData(whereCondition) {
 			top:10,
 			width: CTRL_WIDTH,
 			height: Ti.UI.SIZE,
-			font: { fontSize:"16sp" },
+			font: { fontSize:"16sp", fontWeight: "bold" },
 			color: '#669900',
 			text: rowset.fieldByName('Totale_Partite_Aperte__c') + ' EUR'
 		});
@@ -221,7 +221,7 @@ function loadTableData(whereCondition) {
 
 			btnPartiteAperte = Titanium.UI.createView({
 			   top: 10,
-			   left: 5,
+			   right: 5,
 			   width: 64,
 			   height: 64,
 			   backgroundImage: getPartiteIcon(rowset.fieldByName('Totale_Partite_Aperte__c')),
@@ -242,7 +242,7 @@ function loadTableData(whereCondition) {
 			
 			btnMail = Titanium.UI.createView({
 			   top: 10,
-			   left: 5,
+			   right: 5,
 			   width: 64,
 			   height: 64,
 			   backgroundImage: '/images/mail.png',
@@ -252,7 +252,7 @@ function loadTableData(whereCondition) {
 			
 			btnMaps = Titanium.UI.createView({
 			   top: 10,
-			   left: 5,
+			   right: 5,
 			   width: 64,
 			   height: 64,
 			   backgroundImage: '/images/maps.png',
@@ -262,7 +262,7 @@ function loadTableData(whereCondition) {
 			
 			btnActivity = Titanium.UI.createView({
 			   	top: 10,
-			   	left: 5,
+			   	right: 5,
 			   	width: 64,
 			   	height: 64,
 			   	backgroundImage: '/images/activity.png',

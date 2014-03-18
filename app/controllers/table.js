@@ -5,6 +5,8 @@ $.activityIndicator.hide();
 var sobject = 'Partita_Aperta__c';
 var accountId = args['accountId'];
 
+
+
 var osname = Ti.Platform.osname,
         version = Ti.Platform.version,
         height = Ti.Platform.displayCaps.platformHeight,
@@ -356,7 +358,7 @@ function pay() {
 }
 
 function posPay() {
-	var mposView = Alloy.createController('mpos', {amount: amount_to_pay}).getView();
+	var mposView = Alloy.createController('mpos', {amount: amount_to_pay, rowids: selected_row_ids}).getView();
 	mposView.open();
 }
 
@@ -383,6 +385,32 @@ function getLabelText(payed) {
 
 $.table.addEventListener('close', function() {
     $.destroy();
+});
+
+//we check if a payment has been performed before focusing this screen
+$.table.addEventListener('focus', function() {
+	var pay_status = Ti.App.Properties.getString("mpos.payok");
+	if (pay_status) {
+		if (pay_status=='true') {
+			if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
+					$.activityIndicator.setMessage('Sync Data to server');
+					Alloy.Globals.dynaforce.pushDataToServer({
+						success: function() {
+							Ti.API.info('[table] push data SUCCESS');
+							showHidePopup();
+							loadTableData();
+							Alloy.Globals.dynaforce.setChanges();
+							$.activityIndicator.hide();
+						}
+					});
+				} else {
+					showHidePopup();
+					loadTableData();
+					$.activityIndicator.hide();
+				}
+			Ti.App.Properties.setString("mpos.payok","false");
+		}
+	}
 });
 
 function closeWindow() {

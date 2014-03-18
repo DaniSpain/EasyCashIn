@@ -37,7 +37,7 @@ function Controller() {
                     bottom: 10
                 });
                 rightview = Titanium.UI.createView({
-                    left: 10,
+                    right: 10,
                     height: Ti.UI.SIZE,
                     width: Ti.UI.SIZE,
                     top: "10dp",
@@ -49,15 +49,15 @@ function Controller() {
                 leftview = Titanium.UI.createView({
                     left: 0,
                     height: Ti.UI.SIZE,
-                    width: "45%",
+                    width: Ti.UI.SIZE,
                     layout: "vertical",
                     top: "10dp",
                     bottom: 10
                 });
                 rightview = Titanium.UI.createView({
-                    left: 10,
+                    right: 10,
                     height: Ti.UI.SIZE,
-                    width: "45%",
+                    width: Ti.UI.SIZE,
                     top: "10dp",
                     bottom: 10,
                     layout: "horizontal",
@@ -82,7 +82,8 @@ function Controller() {
                 width: CTRL_WIDTH,
                 height: Ti.UI.SIZE,
                 font: {
-                    fontSize: "16sp"
+                    fontSize: "16sp",
+                    fontWeight: "bold"
                 },
                 color: "#669900",
                 text: rowset.fieldByName("Totale_Partite_Aperte__c") + " EUR"
@@ -107,7 +108,7 @@ function Controller() {
             var btnActivity;
             btnPartiteAperte = Titanium.UI.createView({
                 top: 10,
-                left: 5,
+                right: 5,
                 width: 64,
                 height: 64,
                 backgroundImage: getPartiteIcon(rowset.fieldByName("Totale_Partite_Aperte__c")),
@@ -126,7 +127,7 @@ function Controller() {
             });
             btnMail = Titanium.UI.createView({
                 top: 10,
-                left: 5,
+                right: 5,
                 width: 64,
                 height: 64,
                 backgroundImage: "/images/mail.png",
@@ -135,7 +136,7 @@ function Controller() {
             });
             btnMaps = Titanium.UI.createView({
                 top: 10,
-                left: 5,
+                right: 5,
                 width: 64,
                 height: 64,
                 backgroundImage: "/images/maps.png",
@@ -144,7 +145,7 @@ function Controller() {
             });
             btnActivity = Titanium.UI.createView({
                 top: 10,
-                left: 5,
+                right: 5,
                 width: 64,
                 height: 64,
                 backgroundImage: "/images/activity.png",
