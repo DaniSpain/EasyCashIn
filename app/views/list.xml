@@ -1,18 +1,16 @@
 <Alloy>
-	<Window navBarHidden="true">
+	<Window navBarHidden="true" exitOnClose="true">
 		<View class="header">
     	  <View class="iconWrap">
 	       <ImageView class="dynaIcon"/>
 	      </View>
 	      <Label id="headerTitle">Clienti</Label>
 	      
-	      <View class="rightActionBarButton1" onClick="refreshData">
-	        <ImageView id="refreshImage"/>
-	      </View>
+	      <Button id="infoImage" class="rightActionBarButton0" onClick="viewInfo"></Button>
 	      
-	      <View class="rightActionBarButton2" onClick="showHideSearchBar">
-	        <ImageView id="searchImage"/>
-	      </View>
+	      <Button id="refreshImage" class="rightActionBarButton1" onClick="refreshData"></Button>
+	      
+	      <Button id="searchImage" class="rightActionBarButton2" onClick="showHideSearchBar"></Button>
 	      
 	    </View>
 	    
@@ -20,8 +18,16 @@
 			
         </TableView>
         
-        <View id="searchWrap" visible="false"  layout="vertical">
+        <View id="searchWrap" visible="false"  layout="vertical" backgroundColor="#0099CC">
         	<SearchBar id="search" barColor="#0099CC" showCancel="false" height="43" onReturn="searchData" onChange="searchDataNoHide" />
+        	<View layout="horizontal" width="Ti.UI.FILL" height="40" top="10">
+	        	<Label class="searchLabel">Ha pagamenti aperti</Label>
+	        	<Switch class="searchSwitch" id="onlyDebitors" value="false" onChange="searchDataNoHide" />
+        	</View>
+        	<View layout="horizontal" width="Ti.UI.FILL" height="40" top="10">
+        		<Label class="searchLabel">Ha partite scadute da pagare</Label>
+	        	<Switch class="searchSwitch" id="expired" value="false"  onChange="searchDataNoHide" />
+	        </View>
         </View>
         
         <ActivityIndicator id="activityIndicator" top="Alloy.Globals.top" />

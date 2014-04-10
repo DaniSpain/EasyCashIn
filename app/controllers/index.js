@@ -10,6 +10,7 @@ function showIndicator(e){
 
 Alloy.Globals.dynaforce.init();
 
+
 if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
 
 	Alloy.Globals.force.authorize({
@@ -17,6 +18,8 @@ if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
 			
 			Titanium.API.info("Authenticated to salesforce");
 			Alloy.Globals.dynaforce.resetSync();
+			
+
 			/*
 			$.activityIndicator.setMessage('Sync Layout Configurations');
 			Alloy.Globals.dynaforce.syncLayoutConf({
@@ -40,6 +43,8 @@ if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
 				}
 			});
 			*/
+			
+
 			$.activityIndicator.setMessage('Pushing Data');
 			Alloy.Globals.dynaforce.pushDataToServer({
 				success: function() {
@@ -48,8 +53,9 @@ if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
 					Alloy.Globals.dynaforce.startSync({
 						indicator: $.activityIndicator,
 						success: function() {
-							$.activityIndicator.setMessage('Downloading Images');
-							Alloy.Globals.dynaforce.downloadImages({
+							$.activityIndicator.setMessage('Downloading Attachments');
+							var docDl = require("doc");
+							docDl.downloadFiles({
 								success: function() {
 									$.activityIndicator.hide();
 									openAccountList();
@@ -101,24 +107,6 @@ function openContactList() {
 	//alert('not yet implemented -.-');
 	var listView = Alloy.createController('list', {sobject: 'Contact'}).getView();
 	listView.open();
-	$.activityIndicator.hide();
-}
-
-function openProducts() {
-	$.activityIndicator.setMessage('Reading Products Data');
-	$.activityIndicator.show();
-	//alert('not yet implemented -.-');
-	var listView = Alloy.createController('list', {sobject: 'Product__c'}).getView();
-	listView.open();
-	$.activityIndicator.hide();
-}
-
-function openCatalog() {
-	$.activityIndicator.setMessage('Reading Products Data');
-	$.activityIndicator.show();
-	//alert('not yet implemented -.-');
-	var catalog = Alloy.createController('catalog', {sobject: 'Product__c'}).getView();
-	catalog.open();
 	$.activityIndicator.hide();
 }
 

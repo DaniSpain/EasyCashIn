@@ -13,6 +13,10 @@ exports.convertDateTime = function(sfdcDate) {
 	//return datetime;
 };
 
+/**
+ * Creates a Datetime javascript object given a SFDC formatted datetime string
+ * @param sfdcDate the datetime SFDC formatted
+ */
 exports.getDateTimeObject = function(sfdcDate) {
 	var year = sfdcDate.substring(0,4);
 	var month = sfdcDate.substring(5,7);
@@ -36,16 +40,8 @@ exports.getDateTimeObject = function(sfdcDate) {
  * Creates a date in Salesforce String format (yyyy-mm-ddThh:mm:ssZ)
  * @returns String SFDC dformatted date string
  */
-
 exports.createTodaySfdcDate = function() {
 	var curdate = new Date();
-
-	var year = curdate.getFullYear();
-	var month = normalizeDateString(curdate.getMonth() + 1);
-	var day = normalizeDateString(curdate.getDate());
-	var hours = normalizeDateString(curdate.getHours());
-	var minutes = normalizeDateString(curdate.getMinutes());
-	var seconds = normalizeDateString(curdate.getSeconds());
 	
 	/*
 	var utcdate = new Date(Date.UTC(year,month,day));
@@ -57,11 +53,15 @@ exports.createTodaySfdcDate = function() {
 	var UTCHours = curdate.toUTCString().substring(17,19);
 	Ti.API.info('[dynaforce] [sfdcDate] UTC hours: ' + UTCHours);
 	curdate.setHours(UTCHours);
-	var datestring = getDateString(curdate);
+	//var datestring = getDateString(curdate);
+	var datestring = getUTCSFDCNow();
 	Ti.API.info('[dynaforce] [sfdcDate] Current datetime SFDC format: ' + datestring);
 	return datestring; 
 };
 
+/**
+ * returns a SFDC formatted date
+ */
 function getDateString(curdate) {
 	var year = curdate.getFullYear();
 	var month = normalizeDateString(curdate.getMonth() + 1);
@@ -70,9 +70,25 @@ function getDateString(curdate) {
 	var minutes = normalizeDateString(curdate.getMinutes());
 	var seconds = normalizeDateString(curdate.getSeconds());
 	
-	return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds + 'Z';
+	return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds + '.000+0000';
 }
 
+function getUTCSFDCNow() {
+	var now = new Date();
+	var year = now.getUTCFullYear();
+	var month = normalizeDateString(now.getUTCMonth() + 1);
+	var day = normalizeDateString(now.getUTCDate());
+	var hours = normalizeDateString(now.getUTCHours());
+	var minutes = normalizeDateString(now.getUTCMinutes());
+	var seconds = normalizeDateString(now.getUTCSeconds());
+	
+	return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds + '.000+0000';
+}
+
+exports.getDateStringFromSFDCDate = function(opts) {
+	Ti.API.info('[sfdcDate] SFDC Date: ' + opts.sfdcDate);
+	return opts.sfdcDate.substring(0,10);
+};
 /**
  * Takes the datePart (hour, minutes, secondes, days or months) returns the currect format to 
  * create the salesforce format, with 2 charachters

@@ -1,16 +1,23 @@
 <Alloy>
 	<Window navBarHidden="true">
 		<View class="header">
+			<!--
     	  <View class="iconWrap">
 	       <ImageView id="backImage" onClick="closeWindow" />
 	      </View>
-	      <Label id="headerTitle">Partite Aperte</Label>
+	     -->
+	     <Button class="iconWrap" id="backImage" onClick="closeWindow" />
+	      <Label id="headerTitle">Partite</Label>
 	      
-	      <View class="rightActionBarButton2" onClick="showHidePopup">
-	        <ImageView id="payImage"/>
-	      </View>
+	      <Button id="seeImage" class="rightActionBarButton0" onClick="showHideVisibilityPopup"></Button>
+	      <Button id="sortImage" class="rightActionBarButton1" onClick="showHideSortPopup"></Button>
+	      <Button id="payImage" class="rightActionBarButton2" onClick="showHidePayPopup"></Button>
+	        
 	    </View>
 	    
+	    <View class="tableHeader">
+	    	<Label id="accountName" class="tableHeaderLabel" />
+	    </View>
 		<TableView id="tblView">
 			
         </TableView>
@@ -19,13 +26,14 @@
         	<Label id="footerTitle">Totale selezionato: 0 EUR</Label>
         </View>
         
-        <!-- POPUP -->
-        <View class="overlay" id="overlay" visible="false"></View>
-        <View class="popup" id="popup" visible="false">
+
+        <View class="overlay" id="overlay" visible="false" onClick="closePopups"></View>
+        <!-- PAY POPUP -->
+        <View class="popup" id="pay_popup" visible="false">
         	<View class="popupHeader">
         		<View height="52dp"  width="Ti.UI.FILL">
-	        		<Label id="popupTitle">Metodo di pagamento<Label>
-	        		<View class="rightActionBarButton2" onClick="showHidePopup">
+	        		<Label id="popupTitle">Metodo di pagamento</Label>
+	        		<View class="rightActionBarButton2" onClick="showHidePayPopup">
 			        	<ImageView class="closeImageBlue"/>
 			      	</View>
 		      	</View>
@@ -43,8 +51,71 @@
         		<Button class="popupButton" title="Carta/Bancomat" onClick="posPay" platform="android"></Button>
         	</View>
         </View>
-        <!-- /POPUP -->
+        <!-- /PAY POPUP -->
         
+        <!-- SORT POPUP -->
+        <View class="filterPopup" id="sort_popup" visible="false">
+        	<Label class="filterPopupTitle">Ordinamento</Label>
+        	<View class="separatorLight"></View>
+        	<View class="filterControl">
+        		<Label class="filterLabel">Ordina per</Label>
+        		<Button class="buttonDark" id="sortFieldButton" onClick="showSortOptions" >Scegli</Button>
+        	</View>
+        	<View class="filterControl">
+        		<Label class="filterLabel">Modalità</Label>
+        		<Button class="buttonGreen" id="sortModeButton" onClick="changeSortMode"></Button>
+        	</View>
+        	<View class="popupFooterChoosen">
+        		<Button class="choosenButton" title="Annulla" onClick="closePopups"></Button>
+        		<Button class="choosenButton" title="Ok" onClick="applyFilters"></Button>
+        	</View>
+        </View>
+        <!-- /SORT POPUP -->
+        
+        <!-- SORT OPTIONS -->
+        <OptionDialog id="sortOptions" title="Ordina Per">
+
+	            <!-- The Options tag sets the options property. -->
+	            <Options>
+	                <Option>Data Documento</Option>
+	                <Option>Data Scadenza</Option>
+	                <Option>Importo</Option>
+	                <Option>Data Pagamento</Option>
+	            </Options>
+	
+	
+	          <!-- Add a View for the androidView property here. -->
+		</OptionDialog>
+		<!-- /SORT OPTIONS -->
+		
+        <!-- SEE POPUP -->
+        <View class="filterPopup" id="visibility_popup" visible="false">
+        	<Label class="filterPopupTitle">Visualizza</Label>
+        	<View class="separatorLight"></View>
+        	<View class="filterControl">
+        		<Label class="filterLabelLong">Pagate</Label>
+        		<Switch class="filterSwitch" value="true" id="hidePayed" onChange="setHidePayed"/>
+        	</View>
+        	<View class="filterControl">
+        		<Label class="filterLabelLong">Non pagate</Label>
+        		<Switch class="filterSwitch" value="true" id="hideNotPayed" onChange="setNotHidePayed"/>
+        	</View>
+        	<View class="filterControl">
+        		<Label class="filterLabelLong">Scadute</Label>
+        		<Switch class="filterSwitch" value="true" id="hideExpired" onChange="setExpired"/>
+        	</View>
+        	<View class="filterControl">
+        		<Label class="filterLabelLong">Non scadute</Label>
+        		<Switch class="filterSwitch" value="true" id="hideNotExpired" onChange="setNotExpired"/>
+        	</View>
+        	<View class="popupFooterChoosen">
+        		<Button class="choosenButton" title="Annulla" onClick="closePopups"></Button>
+        		<Button class="choosenButton" title="Ok" onClick="applyFilters"></Button>
+        	</View>
+        </View>
+        <!-- /SEE POPUP -->
+        
+				
         <ActivityIndicator id="activityIndicator" top="Alloy.Globals.top" />
 	</Window>
 </Alloy>

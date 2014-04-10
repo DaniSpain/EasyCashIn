@@ -2,3 +2,15 @@
 	top: Alloy.Globals.tableTop,
 	separatorColor: '#0099CC'
 }
+
+".searchLabel" : {
+	left: 10,
+	color: "#ffffff",
+	width: "70%",
+	height: Ti.UI.SIZE,
+	font: {fontSize: 15}
+}
+
+".searchSwitch[platform=android]" : {
+	style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+}

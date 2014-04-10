@@ -17,7 +17,7 @@
 	    
 	    <View id="content">
 			<!-- Define the styling properties in the TSS file -->
-	        
+	        <!--<Button title="Login" onClick="Login" />-->
 	       <!-- 
 	        <View layout="horizontal" height="Ti.UI.SIZE" width="Ti.UI.SIZE" horizontalWrap="true">
 				<Button title="Accounts" onClick="openAccountList" />

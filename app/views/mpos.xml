@@ -2,7 +2,7 @@
 	<Window>
 		<View width="Ti.UI.SIZE" height="Ti.UI.SIZE" layout="vertical" >
 			<Label id="amount"></Label>
-			<Button title="Conferma" height="Ti.UI.SIZE" width="Ti.UI.SIZE" onClick="callPos" >
+			<Button title="Conferma" height="Ti.UI.SIZE" width="Ti.UI.SIZE" top="10" onClick="callPos" >
 		</View>
 		<ActivityIndicator id="activityIndicator"></ActivityIndicator>
 	</Window>

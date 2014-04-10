@@ -1,5 +1,6 @@
 "Window" : {
-	backgroundColor: "#ffffff"	
+	backgroundColor: "#ffffff",
+	orientationModes: Alloy.Globals.orientations
 }
 
 ".header" : {
@@ -54,6 +55,12 @@
 	height: 40
 }
 
+".rightActionBarButton0" : {
+	right: 110,
+	width: 40,
+	height: 40
+}
+
 "#searchWrap" : {
 	width: Ti.UI.FILL, 
 	height: Ti.UI.SIZE,
@@ -61,26 +68,45 @@
 }
 
 "#backImage" : {
-	height: Ti.UI.FILL,
-	width: Ti.UI.FILL,
-	color: "#fff",
 	backgroundColor: "transparent",
-	image: "/images/ic_action_back.png",
-	//touchEnabled: false
+	backgroundImage: "/images/ic_action_back.png",
+	backgroundFocusedImage: "/images/ic_action_back_on.png",
+	backgroundSelectedImage: "/images/ic_action_back_on.png",
 }
 
 "#searchImage" : {
-	height: Ti.UI.FILL,
-	width: Ti.UI.FILL,
 	backgroundColor: "transparent",
-	image: "/images/ic_action_search.png",
+	backgroundImage: "/images/ic_action_search.png",
+	backgroundFocusedImage: "/images/ic_action_search_on.png",
+	backgroundSelectedImage: "/images/ic_action_search_on.png",
 }
 
 "#refreshImage" : {
-	height: Ti.UI.FILL,
-	width: Ti.UI.FILL,
 	backgroundColor: "transparent",
-	image: "/images/ic_action_refresh.png",
+	backgroundImage: "/images/ic_action_refresh.png",
+	backgroundFocusedImage: "/images/ic_action_refresh_on.png",
+	backgroundSelectedImage: "/images/ic_action_refresh_on.png",
+}
+
+"#infoImage" : {
+	backgroundColor: "transparent",
+	backgroundImage: "/images/ic_action_about.png",
+	backgroundFocusedImage: "/images/ic_action_about_on.png",
+	backgroundSelectedImage: "/images/ic_action_about_on.png",
+}
+
+"#sortImage" : {
+	backgroundColor: "transparent",
+	backgroundImage: "/images/sort.png",
+	backgroundFocusedImage: "/images/sort_on.png",
+	backgroundSelectedImage: "/images/sort_on.png",
+}
+
+"#seeImage" : {
+	backgroundColor: "transparent",
+	backgroundImage: "/images/eye.png",
+	backgroundFocusedImage: "/images/eye_on.png",
+	backgroundSelectedImage: "/images/eye_on.png",
 }
 
 

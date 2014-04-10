@@ -8,7 +8,7 @@ var args = arguments[0] || {};
 var amount = args['amount'];
 var rowids = args['rowids'];
 
-var sobject = "Partita_Aperta__c";
+var sobject = "ATLECI__Partita_Aperta__c";
 
 $.amount.setText(amount + ' EUR');
 $.mpos.open();
@@ -99,19 +99,22 @@ function callPos() {
 				$.activityIndicator.show();
 				Ti.API.info('[table] selected rows: ' + rowids);
 				for (var i=0; i<rowids.length; i++) {
+					var sfdcDate = require('sfdcDate');
+					var sfdcNow = sfdcDate.createTodaySfdcDate();
 					Alloy.Globals.dynaforce.upsertObject({
 						sobject: sobject,
 						rowId: rowids[i],
 						data: {
-							'Pagato__c': true,
-							'MPOS_Acquirer_ID__c': acquirer_id,
-							'MPOS_Authorization_Number__c': authorization_number,
-							'MPOS_CVM__c': cvm,
-							'MPOS_Terminal_ID__c': termid,
-							'MPOS_Operation_Number__c': opration_number,
-							'MPOS_PAN__c': pan,
-							'MPOS_STAN__c': stan,
-							'MPOS_Transaction_Type__c': trans_type
+							'ATLECI__Pagato__c': true,
+							'ATLECI__Data_Pagamento__c': sfdcNow,
+							'ATLECI__MPOS_Acquirer_ID__c': acquirer_id,
+							'ATLECI__MPOS_Authorization_Number__c': authorization_number,
+							'ATLECI__MPOS_CVM__c': cvm,
+							'ATLECI__MPOS_Terminal_ID__c': termid,
+							'ATLECI__MPOS_Operation_Number__c': opration_number,
+							'ATLECI__MPOS_PAN__c': pan,
+							'ATLECI__MPOS_STAN__c': stan,
+							'ATLECI__MPOS_Transaction_Type__c': trans_type
 						},
 						error: function() {
 							alert('save data Error');

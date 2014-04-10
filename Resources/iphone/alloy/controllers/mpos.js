@@ -52,24 +52,29 @@ function Controller() {
                     $.activityIndicator.setMessage("Saving data");
                     $.activityIndicator.show();
                     Ti.API.info("[table] selected rows: " + rowids);
-                    for (var i = 0; rowids.length > i; i++) Alloy.Globals.dynaforce.upsertObject({
-                        sobject: sobject,
-                        rowId: rowids[i],
-                        data: {
-                            Pagato__c: true,
-                            MPOS_Acquirer_ID__c: acquirer_id,
-                            MPOS_Authorization_Number__c: authorization_number,
-                            MPOS_CVM__c: cvm,
-                            MPOS_Terminal_ID__c: termid,
-                            MPOS_Operation_Number__c: opration_number,
-                            MPOS_PAN__c: pan,
-                            MPOS_STAN__c: stan,
-                            MPOS_Transaction_Type__c: trans_type
-                        },
-                        error: function() {
-                            alert("save data Error");
-                        }
-                    });
+                    for (var i = 0; rowids.length > i; i++) {
+                        var sfdcDate = require("sfdcDate");
+                        var sfdcNow = sfdcDate.createTodaySfdcDate();
+                        Alloy.Globals.dynaforce.upsertObject({
+                            sobject: sobject,
+                            rowId: rowids[i],
+                            data: {
+                                ATLECI__Pagato__c: true,
+                                ATLECI__Data_Pagamento__c: sfdcNow,
+                                ATLECI__MPOS_Acquirer_ID__c: acquirer_id,
+                                ATLECI__MPOS_Authorization_Number__c: authorization_number,
+                                ATLECI__MPOS_CVM__c: cvm,
+                                ATLECI__MPOS_Terminal_ID__c: termid,
+                                ATLECI__MPOS_Operation_Number__c: opration_number,
+                                ATLECI__MPOS_PAN__c: pan,
+                                ATLECI__MPOS_STAN__c: stan,
+                                ATLECI__MPOS_Transaction_Type__c: trans_type
+                            },
+                            error: function() {
+                                alert("save data Error");
+                            }
+                        });
+                    }
                     Ti.App.Properties.setString("mpos.payok", "true");
                     $.mpos.close();
                 } else alert("Transazione Annullata");
@@ -92,35 +97,37 @@ function Controller() {
     var __defers = {};
     $.__views.mpos = Ti.UI.createWindow({
         backgroundColor: "#ffffff",
+        orientationModes: Alloy.Globals.orientations,
         id: "mpos"
     });
     $.__views.mpos && $.addTopLevelView($.__views.mpos);
-    $.__views.__alloyId10 = Ti.UI.createView({
+    $.__views.__alloyId18 = Ti.UI.createView({
         width: Ti.UI.SIZE,
         height: Ti.UI.SIZE,
         layout: "vertical",
-        id: "__alloyId10"
+        id: "__alloyId18"
     });
-    $.__views.mpos.add($.__views.__alloyId10);
+    $.__views.mpos.add($.__views.__alloyId18);
     $.__views.amount = Ti.UI.createLabel({
         height: Ti.UI.SIZE,
         width: Ti.UI.SIZE,
         color: "#0099CC",
         font: {
-            fontSize: "23sp",
+            fontSize: "25sp",
             fontWeight: "normal"
         },
         id: "amount"
     });
-    $.__views.__alloyId10.add($.__views.amount);
-    $.__views.__alloyId11 = Ti.UI.createButton({
+    $.__views.__alloyId18.add($.__views.amount);
+    $.__views.__alloyId19 = Ti.UI.createButton({
         title: "Conferma",
         height: Ti.UI.SIZE,
         width: Ti.UI.SIZE,
-        id: "__alloyId11"
+        top: "10",
+        id: "__alloyId19"
     });
-    $.__views.__alloyId10.add($.__views.__alloyId11);
-    callPos ? $.__views.__alloyId11.addEventListener("click", callPos) : __defers["$.__views.__alloyId11!click!callPos"] = true;
+    $.__views.__alloyId18.add($.__views.__alloyId19);
+    callPos ? $.__views.__alloyId19.addEventListener("click", callPos) : __defers["$.__views.__alloyId19!click!callPos"] = true;
     $.__views.activityIndicator = Ti.UI.createActivityIndicator({
         color: "#ffffff",
         font: {
@@ -142,13 +149,13 @@ function Controller() {
     var args = arguments[0] || {};
     var amount = args["amount"];
     var rowids = args["rowids"];
-    var sobject = "Partita_Aperta__c";
+    var sobject = "ATLECI__Partita_Aperta__c";
     $.amount.setText(amount + " EUR");
     $.mpos.open();
     $.mpos.addEventListener("focus", function() {
         $.activityIndicator.hide();
     });
-    __defers["$.__views.__alloyId11!click!callPos"] && $.__views.__alloyId11.addEventListener("click", callPos);
+    __defers["$.__views.__alloyId19!click!callPos"] && $.__views.__alloyId19.addEventListener("click", callPos);
     _.extend($, exports);
 }
 

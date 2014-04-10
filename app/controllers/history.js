@@ -1,7 +1,7 @@
 var args = arguments[0] || {};
 
 
-var sobject = 'History__c';
+var sobject = 'ATLECI__History__c';
 var accountId = args['accountId'];
 
 var IS_IOS;
@@ -21,14 +21,14 @@ var sfdcDate = require('sfdcDate');
 
 //var selectList = 'Id, Name, Email, BillingStreet, Data_Prima_Scadenza__c, Totale_Partite_Aperte__c';
 
-var selectList = 'Id, Title__c, LastModifiedDate'; 
+var selectList = 'Id, ATLECI__Title__c, LastModifiedDate'; 
 
 
 
 function loadTableData() {
 	
 	
-	var queryString = 'SELECT ' + selectList + ' FROM ' + sobject + ' WHERE Account__c = "' + accountId + '" ORDER BY LastModifiedDate DESC';
+	var queryString = 'SELECT ' + selectList + ' FROM ' + sobject + ' WHERE ATLECI__Account__c = "' + accountId + '" ORDER BY LastModifiedDate DESC';
 	//var queryString = 'SELECT ' + selectList + ' FROM ' + sobject;
 	
 	db = Ti.Database.open(Alloy.Globals.dbName);
@@ -85,7 +85,7 @@ function loadTableData() {
 			height: Ti.UI.SIZE,
 			font: { fontSize:14 },
 			horizontalWrap: true,
-			text: rowset.fieldByName('Title__c'),
+			text: rowset.fieldByName('ATLECI__Title__c'),
 			color: '#0099CC'
 		});
 		

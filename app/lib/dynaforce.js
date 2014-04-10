@@ -37,7 +37,8 @@ var SFDCSQLiteFieldMap = {
 	'date': 'DATE',
 	'picklist': 'TEXT',
 	'email': 'TEXT',
-	'reference': 'TEXT'
+	'reference': 'TEXT',
+	'base64': 'TEXT'
 };
 
 var operation = {
@@ -55,11 +56,15 @@ var sobjectSync = [
 	synched: false,
 },
 {
-	sobject: 'Partita_Aperta__c',
+	sobject: 'ATLECI__Partita_Aperta__c',
 	synched: false,
 },
 {
-	sobject: 'History__c',
+	sobject: 'ATLECI__History__c',
+	synched: false,
+},
+{
+	sobject: 'Attachment',
 	synched: false,
 },
 ];
@@ -328,7 +333,7 @@ exports.startSync = function(callbacks) {
 		row.synched = true;
 		var sobject = row.sobject;
 		Ti.API.info('[dynaforce] SYNCHRONIZING SOBJECT: ' + sobject);
-		callbacks.indicator.setMessage('Sync ' + sobject + ' Data and Structure');
+		callbacks.indicator.setMessage('Sync ' + sobject);
 		
 		/*
 		 * First, synchronize the data description of the SObject
@@ -358,7 +363,7 @@ exports.startSync = function(callbacks) {
 						Ti.API.info('[dynaforce] TABLE ' + sobject + ' SUCCESSFULLY CREATED (with no columns) OR ALREADY EXISTS');
 					} catch (e) {
 						Ti.API.error('[dynaforce] Error creating empty table: ' + sobject);
-						Ti.API.error('[dinaforce] Exception: ' + e);
+						Ti.API.error('[dynaforce] Exception: ' + e);
 					}
 					
 					for (var i=0; i<fields.length; i++) {
@@ -483,6 +488,9 @@ exports.startSync = function(callbacks) {
 									}
 								}
 								
+								//BLOB or base64 type
+								
+								
 							}
 							
 							
@@ -588,19 +596,7 @@ exports.startSync = function(callbacks) {
 									var value = record[usedFields[j]];
 									
 									/*** MANAGING FIELD TYPE EXCEPTIONS ***/
-									
-									if (value!=null) {
-										/*
-										if (type=="datetime") {
-											try {
-												var dateUtils = require('sfdcDate');
-												value = dateUtils.convertDateTime(value);	
-											} catch (e) {
-												Ti.API.error('[dynaforce] Exception converting datetime: ' + e);
-											}
-										}
-										*/
-									}
+							
 									
 									
 									statement += field;
@@ -616,6 +612,28 @@ exports.startSync = function(callbacks) {
 											Ti.API.error("[dynaforce] String exception: " + e);
 										}
 										*/
+										
+										//if (value.IndexOf('"')>=0) {
+											
+											/*
+											var pattern = new RegExp('/"/g');
+											var str = value.replace(pattern,"'");
+											value = str;
+											*/
+											
+											var str = "";
+											var replace = false;
+											for (var jj=0; jj<value.length; jj++) {	
+												if (value.charAt(jj)=='"') {
+													str+="'";
+													replace = true;
+												} else str+=value.charAt(jj);
+											}
+											//Ti.API.info("[dynaforce] STR: " + str);
+											//Ti.API.info("[dynaforce] VAL: " + value);
+											if (replace) value = str;	
+										//}
+										
 										values += '"' + value + '"';
 									}
 									else values += null;
@@ -856,13 +874,9 @@ exports.upsertObject = function(opts) {
 	var fieldList = [];
 	var valueList = [];
 	var updateSet = '';
+	
+	//create the update set tu attach in the update query
 	for (var key in opts.data) {
-		//fieldList.push(key);
-		//valueList.push(opts.data[key]);
-		/*
-		fieldList += ',' + key;
-		valueList += ',"' + opts.data[key] + '"';
-		*/
 		fieldList.push(key);
 		valueList.push(opts.data[key]);
 		if (updateSet=='') updateSet += key + '="' + opts.data[key] + '"';
@@ -874,7 +888,7 @@ exports.upsertObject = function(opts) {
 		
 	if (opts.rowId) {
 		//update mode
-		//UPDATE players SET user_name="steven", age=32 WHERE user_name="steven"; 
+		//SQLite example: UPDATE players SET user_name="steven", age=32 WHERE user_name="steven"; 
 		//STEP 1: update the object locally
 		Ti.API.info('[dynaforce] UPDATE ' + opts.sobject + ' SET ' + updateSet + ' ' +
 			'WHERE Id = "' + id + '";');

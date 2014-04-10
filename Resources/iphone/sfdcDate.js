@@ -5,7 +5,18 @@ function getDateString(curdate) {
     var hours = normalizeDateString(curdate.getHours());
     var minutes = normalizeDateString(curdate.getMinutes());
     var seconds = normalizeDateString(curdate.getSeconds());
-    return year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "Z";
+    return year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + ".000+0000";
+}
+
+function getUTCSFDCNow() {
+    var now = new Date();
+    var year = now.getUTCFullYear();
+    var month = normalizeDateString(now.getUTCMonth() + 1);
+    var day = normalizeDateString(now.getUTCDate());
+    var hours = normalizeDateString(now.getUTCHours());
+    var minutes = normalizeDateString(now.getUTCMinutes());
+    var seconds = normalizeDateString(now.getUTCSeconds());
+    return year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + ".000+0000";
 }
 
 function normalizeDateString(datePart) {
@@ -40,17 +51,16 @@ exports.getDateTimeObject = function(sfdcDate) {
 
 exports.createTodaySfdcDate = function() {
     var curdate = new Date();
-    curdate.getFullYear();
-    normalizeDateString(curdate.getMonth() + 1);
-    normalizeDateString(curdate.getDate());
-    normalizeDateString(curdate.getHours());
-    normalizeDateString(curdate.getMinutes());
-    normalizeDateString(curdate.getSeconds());
     Ti.API.info("[dynaforce] [sfdcDate] UTC String: " + curdate.toUTCString());
     var UTCHours = curdate.toUTCString().substring(17, 19);
     Ti.API.info("[dynaforce] [sfdcDate] UTC hours: " + UTCHours);
     curdate.setHours(UTCHours);
-    var datestring = getDateString(curdate);
+    var datestring = getUTCSFDCNow();
     Ti.API.info("[dynaforce] [sfdcDate] Current datetime SFDC format: " + datestring);
     return datestring;
+};
+
+exports.getDateStringFromSFDCDate = function(opts) {
+    Ti.API.info("[sfdcDate] SFDC Date: " + opts.sfdcDate);
+    return opts.sfdcDate.substring(0, 10);
 };

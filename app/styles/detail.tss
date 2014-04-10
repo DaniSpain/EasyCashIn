@@ -1,0 +1,35 @@
+
+".detailContent" : {
+	top: Alloy.Globals.tableTop,
+  	width: Ti.UI.FILL,
+  	height: Ti.UI.SIZE,
+  	layout: "vertical",
+  	//horizontalWrap: true
+}
+
+".detailBlock" : {
+	layout: "vertical",
+	width: Alloy.Globals.detailBlockWidth,
+	height: 150,
+}
+
+
+".wrapper" : {
+	layout: Alloy.Globals.detailWrapperOrientation,
+	width: Ti.UI.FILL,
+	height: Ti.UI.SIZE
+}
+
+".legendLabel" : {
+	top: 10,
+	left: 10,
+	color: "#000000",
+	font: {fontSize:"14sp"}
+}
+
+".infoLabel" : {
+	top: 10,
+	left: 10,
+	color: "#0099cc",
+	font: {fontSize:"16sp", fontWeight: "bold"}
+}

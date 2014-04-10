@@ -1,9 +1,7 @@
 <Alloy>
 	<Window navBarHidden="true">
 		<View class="header">
-    	  <View class="iconWrap">
-	       <ImageView id="backImage" onClick="closeWindow" />
-	      </View>
+    	  <Button class="iconWrap" id="backImage" onClick="closeWindow" />
 	      <Label id="headerTitle">Activity History</Label>
 	      
 	  

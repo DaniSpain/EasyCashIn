@@ -1,6 +1,6 @@
 function Controller() {
     function loadTableData() {
-        var queryString = "SELECT " + selectList + " FROM " + sobject + ' WHERE Account__c = "' + accountId + '" ORDER BY LastModifiedDate DESC';
+        var queryString = "SELECT " + selectList + " FROM " + sobject + ' WHERE ATLECI__Account__c = "' + accountId + '" ORDER BY LastModifiedDate DESC';
         db = Ti.Database.open(Alloy.Globals.dbName);
         Ti.API.info("[dynaforce] Query: " + queryString);
         try {
@@ -46,7 +46,7 @@ function Controller() {
                     fontSize: 14
                 },
                 horizontalWrap: true,
-                text: rowset.fieldByName("Title__c"),
+                text: rowset.fieldByName("ATLECI__Title__c"),
                 color: "#0099CC"
             });
             view.add(lblDate);
@@ -72,34 +72,30 @@ function Controller() {
     var __defers = {};
     $.__views.history = Ti.UI.createWindow({
         backgroundColor: "#ffffff",
+        orientationModes: Alloy.Globals.orientations,
         navBarHidden: "true",
         id: "history"
     });
     $.__views.history && $.addTopLevelView($.__views.history);
-    $.__views.__alloyId0 = Ti.UI.createView({
+    $.__views.__alloyId7 = Ti.UI.createView({
         top: Alloy.Globals.top,
         height: "50dp",
         width: Ti.UI.FILL,
         backgroundColor: "#669900",
-        id: "__alloyId0"
+        id: "__alloyId7"
     });
-    $.__views.history.add($.__views.__alloyId0);
-    $.__views.__alloyId1 = Ti.UI.createView({
+    $.__views.history.add($.__views.__alloyId7);
+    $.__views.backImage = Ti.UI.createButton({
         left: 10,
         width: 40,
         height: 40,
-        id: "__alloyId1"
-    });
-    $.__views.__alloyId0.add($.__views.__alloyId1);
-    $.__views.backImage = Ti.UI.createImageView({
-        height: Ti.UI.FILL,
-        width: Ti.UI.FILL,
-        color: "#fff",
         backgroundColor: "transparent",
-        image: "/images/ic_action_back.png",
+        backgroundImage: "/images/ic_action_back.png",
+        backgroundFocusedImage: "/images/ic_action_back_on.png",
+        backgroundSelectedImage: "/images/ic_action_back_on.png",
         id: "backImage"
     });
-    $.__views.__alloyId1.add($.__views.backImage);
+    $.__views.__alloyId7.add($.__views.backImage);
     closeWindow ? $.__views.backImage.addEventListener("click", closeWindow) : __defers["$.__views.backImage!click!closeWindow"] = true;
     $.__views.headerTitle = Ti.UI.createLabel({
         left: "60dp",
@@ -111,7 +107,7 @@ function Controller() {
         text: "Activity History",
         id: "headerTitle"
     });
-    $.__views.__alloyId0.add($.__views.headerTitle);
+    $.__views.__alloyId7.add($.__views.headerTitle);
     $.__views.tblView = Ti.UI.createTableView({
         top: Alloy.Globals.tableTop,
         separatorColor: "#0099CC",
@@ -121,14 +117,14 @@ function Controller() {
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
-    var sobject = "History__c";
+    var sobject = "ATLECI__History__c";
     var accountId = args["accountId"];
     var IS_IOS;
     var IS_ANDROID;
     IS_ANDROID = false;
     IS_IOS = true;
     var sfdcDate = require("sfdcDate");
-    var selectList = "Id, Title__c, LastModifiedDate";
+    var selectList = "Id, ATLECI__Title__c, LastModifiedDate";
     loadTableData();
     $.history.open();
     $.history.addEventListener("close", function() {

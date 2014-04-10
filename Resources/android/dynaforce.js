@@ -70,7 +70,8 @@ var SFDCSQLiteFieldMap = {
     date: "DATE",
     picklist: "TEXT",
     email: "TEXT",
-    reference: "TEXT"
+    reference: "TEXT",
+    base64: "TEXT"
 };
 
 var operation = {
@@ -83,10 +84,13 @@ var sobjectSync = [ {
     sobject: "Account",
     synched: false
 }, {
-    sobject: "Partita_Aperta__c",
+    sobject: "ATLECI__Partita_Aperta__c",
     synched: false
 }, {
-    sobject: "History__c",
+    sobject: "ATLECI__History__c",
+    synched: false
+}, {
+    sobject: "Attachment",
     synched: false
 } ];
 
@@ -259,7 +263,7 @@ exports.startSync = function(callbacks) {
         row.synched = true;
         var sobject = row.sobject;
         Ti.API.info("[dynaforce] SYNCHRONIZING SOBJECT: " + sobject);
-        callbacks.indicator.setMessage("Sync " + sobject + " Data and Structure");
+        callbacks.indicator.setMessage("Sync " + sobject);
         Alloy.Globals.force.request({
             type: "GET",
             url: "/sobjects/" + sobject + "/describe",
@@ -277,7 +281,7 @@ exports.startSync = function(callbacks) {
                         Ti.API.info("[dynaforce] TABLE " + sobject + " SUCCESSFULLY CREATED (with no columns) OR ALREADY EXISTS");
                     } catch (e) {
                         Ti.API.error("[dynaforce] Error creating empty table: " + sobject);
-                        Ti.API.error("[dinaforce] Exception: " + e);
+                        Ti.API.error("[dynaforce] Exception: " + e);
                     }
                     for (var i = 0; fields.length > i; i++) {
                         var f = fields[i];
@@ -381,9 +385,17 @@ exports.startSync = function(callbacks) {
                                     var field = usedFields[j];
                                     usedFieldTypes[j];
                                     var value = record[usedFields[j]];
-                                    null != value;
                                     statement += field;
-                                    values += null != value ? '"' + value + '"' : null;
+                                    if (null != value) {
+                                        var str = "";
+                                        var replace = false;
+                                        for (var jj = 0; value.length > jj; jj++) if ('"' == value.charAt(jj)) {
+                                            str += "'";
+                                            replace = true;
+                                        } else str += value.charAt(jj);
+                                        replace && (value = str);
+                                        values += '"' + value + '"';
+                                    } else values += null;
                                     if (j != usedFields.length - 1) {
                                         statement += ",";
                                         values += ",";
