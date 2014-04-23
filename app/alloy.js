@@ -62,7 +62,8 @@ var osname = Ti.Platform.osname,
         height = Ti.Platform.displayCaps.platformHeight,
         width = Ti.Platform.displayCaps.platformWidth;
         
-var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 900));
+var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 1200));
+Alloy.Globals.isTablet = IS_TABLET;
 Alloy.Globals.popupWidth = "90%";
 Alloy.Globals.orientations = [
 	Ti.UI.PORTRAIT

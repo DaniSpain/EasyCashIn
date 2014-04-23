@@ -9,7 +9,7 @@ exports.data = {
 	Billing_Street: "BillingStreet",
 	Data_Prima_Scadenza: NAMESPACE + "Data_Prima_Scadenza__c",
 	Totale_Partite_Aperte: NAMESPACE + "Totale_Partite_Aperte__c",
-	Email: "ATLECI__Email__c",
+	Email: NAMESPACE + "Email__c",
 	Billing_Street: "BillingStreet",
 	Billing_City: "BillingCity",
 	Billing_State: "BillingState",

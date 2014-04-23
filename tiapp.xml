@@ -5,6 +5,7 @@
     <property name="force.consumer.secret" type="string">3240227695155818712</property>
     <!-- Custon properties -->
     <property name="ti.ui.defaultunit" type="string">dip</property>
+    
     <id>com.atl.easycashin</id>
     <name>EasyCashIn</name>
     <version>1.0.4</version>

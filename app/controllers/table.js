@@ -52,7 +52,7 @@ if (osname=='android') {
 	IS_IOS = true;
 }
 
-var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 900));
+var IS_TABLET = Alloy.Globals.isTablet;
 
 var ctrlWidth = 140;
 

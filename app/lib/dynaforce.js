@@ -8,6 +8,7 @@
 var LAST_SYNC = Ti.App.Properties.getString('dynaforce.lastSync');
 var LOCAL_CHANGES = false;
 
+
 exports.LIST_LAYOUT_TABLE = "ListLayout";
 exports.DETAIL_LAYOUT_TABLE = "DetailLayout";
 exports.SYNC_TABLE = 'Sync';

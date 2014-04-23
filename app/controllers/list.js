@@ -25,7 +25,7 @@ if (osname=='android') {
 	IS_IOS = true;
 }
 
-var IS_TABLET = osname === 'ipad' || (osname === 'android' && (width > 900));
+var IS_TABLET = Alloy.Globals.isTablet;
 
 var rowHeight;
 
@@ -461,31 +461,49 @@ function searchDataNoHide() {
 
 function refreshData() {
 	if(Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
-		Alloy.Globals.dynaforce.resetSync();
-		
-				
-		$.activityIndicator.setMessage('Pushing Data');
-		$.activityIndicator.show();
-		Alloy.Globals.dynaforce.pushDataToServer({
+		$.activityIndicator.setMessage('Validate User Credentials');
+    	$.activityIndicator.show();
+		Alloy.Globals.force.authorize({
 			success: function() {
-				Ti.API.info('[dynaforce] pushDataToServer SUCCESS');
-				$.activityIndicator.setMessage('Sync Data Models');
-				Alloy.Globals.dynaforce.startSync({
-					indicator: $.activityIndicator,
+				
+				Titanium.API.info("Authenticated to salesforce");
+				Alloy.Globals.dynaforce.resetSync();
+	
+				$.activityIndicator.setMessage('Pushing Data');
+				Alloy.Globals.dynaforce.pushDataToServer({
 					success: function() {
-						$.activityIndicator.setMessage('Downloading Attachments');
-							var docDl = require("doc");
-							docDl.downloadFiles({
-								success: function() {
-									$.activityIndicator.hide();
-									clearSearchFilters();
-									loadTableData();
-								}
-							});
+						Ti.API.info('[dynaforce] pushDataToServer SUCCESS');
+						$.activityIndicator.setMessage('Sync Data Models');
+						Alloy.Globals.dynaforce.startSync({
+							indicator: $.activityIndicator,
+							success: function() {
+								$.activityIndicator.setMessage('Downloading Attachments');
+								var docDl = require("doc");
+								docDl.downloadFiles({
+									success: function() {
+										$.activityIndicator.hide();
+									}
+								});
+							}
+						});
 					}
 				});
+				
+			},
+			expired: function() {
+				Ti.API.info('[dynaforce] Session Expired');
+				$.index.close();
+			},
+			error: function() {
+				Ti.API.error('error');
+				alert('Connection Error');
+				$.activityIndicator.hide();
+			},
+			cancel: function() {
+				Ti.API.info('cancel');
+				$.activityIndicator.hide();
 			}
-		});
+		});	
 		
 	} else {
 		alert('Cannot perform this operation without connectivity');

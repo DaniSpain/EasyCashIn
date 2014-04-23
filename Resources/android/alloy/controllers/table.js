@@ -1099,8 +1099,8 @@ function Controller() {
     db.close();
     $.accountName.setText(accountName);
     var switchStatus = {};
-    var osname = "android", width = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, 
-    Ti.Platform.displayCaps.platformWidth);
+    var osname = "android";
+    Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, Ti.Platform.displayCaps.platformWidth;
     var IS_IOS;
     var IS_ANDROID;
     if ("android" == osname) {
@@ -1110,7 +1110,7 @@ function Controller() {
         IS_ANDROID = false;
         IS_IOS = true;
     }
-    var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
+    var IS_TABLET = Alloy.Globals.isTablet;
     var ctrlWidth = 140;
     var rowHeight;
     if (IS_TABLET) {

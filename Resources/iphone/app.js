@@ -30,7 +30,9 @@ try {
 
 var osname = Ti.Platform.osname, version = Ti.Platform.version, height = Ti.Platform.displayCaps.platformHeight, width = Ti.Platform.displayCaps.platformWidth;
 
-var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
+var IS_TABLET = "ipad" === osname || "android" === osname && width > 1200;
+
+Alloy.Globals.isTablet = IS_TABLET;
 
 Alloy.Globals.popupWidth = "90%";
 

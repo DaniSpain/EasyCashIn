@@ -260,27 +260,44 @@ function Controller() {
     }
     function refreshData() {
         if (Titanium.Network.networkType != Titanium.Network.NETWORK_NONE) {
-            Alloy.Globals.dynaforce.resetSync();
-            $.activityIndicator.setMessage("Pushing Data");
+            $.activityIndicator.setMessage("Validate User Credentials");
             $.activityIndicator.show();
-            Alloy.Globals.dynaforce.pushDataToServer({
+            Alloy.Globals.force.authorize({
                 success: function() {
-                    Ti.API.info("[dynaforce] pushDataToServer SUCCESS");
-                    $.activityIndicator.setMessage("Sync Data Models");
-                    Alloy.Globals.dynaforce.startSync({
-                        indicator: $.activityIndicator,
+                    Titanium.API.info("Authenticated to salesforce");
+                    Alloy.Globals.dynaforce.resetSync();
+                    $.activityIndicator.setMessage("Pushing Data");
+                    Alloy.Globals.dynaforce.pushDataToServer({
                         success: function() {
-                            $.activityIndicator.setMessage("Downloading Attachments");
-                            var docDl = require("doc");
-                            docDl.downloadFiles({
+                            Ti.API.info("[dynaforce] pushDataToServer SUCCESS");
+                            $.activityIndicator.setMessage("Sync Data Models");
+                            Alloy.Globals.dynaforce.startSync({
+                                indicator: $.activityIndicator,
                                 success: function() {
-                                    $.activityIndicator.hide();
-                                    clearSearchFilters();
-                                    loadTableData();
+                                    $.activityIndicator.setMessage("Downloading Attachments");
+                                    var docDl = require("doc");
+                                    docDl.downloadFiles({
+                                        success: function() {
+                                            $.activityIndicator.hide();
+                                        }
+                                    });
                                 }
                             });
                         }
                     });
+                },
+                expired: function() {
+                    Ti.API.info("[dynaforce] Session Expired");
+                    $.index.close();
+                },
+                error: function() {
+                    Ti.API.error("error");
+                    alert("Connection Error");
+                    $.activityIndicator.hide();
+                },
+                cancel: function() {
+                    Ti.API.info("cancel");
+                    $.activityIndicator.hide();
                 }
             });
         } else alert("Cannot perform this operation without connectivity");
@@ -302,11 +319,6 @@ function Controller() {
         }
         db.close();
         return check;
-    }
-    function clearSearchFilters() {
-        $.search.setValue("");
-        $.onlyDebitors.setValue(false);
-        $.expired.setValue(false);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "list";
@@ -499,8 +511,8 @@ function Controller() {
     var PARTITE = require("datamodel/partite");
     var sobject = args["sobject"];
     Ti.API.info("[dynaforce] PASSED SOBJECT: " + sobject);
-    var osname = "android", width = (Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, 
-    Ti.Platform.displayCaps.platformWidth);
+    var osname = "android";
+    Ti.Platform.version, Ti.Platform.displayCaps.platformHeight, Ti.Platform.displayCaps.platformWidth;
     var IS_IOS;
     var IS_ANDROID;
     if ("android" == osname) {
@@ -510,7 +522,7 @@ function Controller() {
         IS_ANDROID = false;
         IS_IOS = true;
     }
-    var IS_TABLET = "ipad" === osname || "android" === osname && width > 900;
+    var IS_TABLET = Alloy.Globals.isTablet;
     var rowHeight;
     var LBL_NAME_SIZE;
     var CTRL_WIDTH;
